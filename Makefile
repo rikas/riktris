@@ -1,6 +1,6 @@
 CC = gcc
-FLAGS = -Wall `pkg-config --cflags --libs allegro-5 allegro_main-5 allegro_font-5 allegro_primitives-5 allegro_image-5`
-OBJ = main.o playfield.o game.o
+LDFLAGS = -Wall `pkg-config --cflags --libs allegro-5 allegro_main-5 allegro_font-5 allegro_primitives-5 allegro_image-5`
+OBJ = main.o playfield.o game.o tetriminos.o
 BIN = riktris
 
 .DEFAULT_GOAL := build
@@ -14,5 +14,11 @@ field.o: playfield.c
 game.o: game.c
 	$(CC) -c game.c
 
-build: main.o playfield.o
-	$(CC) -o $(BIN) $(OBJ) $(FLAGS)
+tetriminos.o: tetriminos.c
+	$(CC) -c tetriminos.c
+
+build: main.o playfield.o game.o tetriminos.o
+	$(CC) -o $(BIN) $(OBJ) $(LDFLAGS)
+
+debug: main.o playfield.o game.o tetriminos.o
+	$(CC) -g -O0 -o $(BIN) $(OBJ) $(LDFLAGS)

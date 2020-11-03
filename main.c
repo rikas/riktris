@@ -1,43 +1,23 @@
+#define DEBUGMODE
+#define ALLEGRO_STATICLINK
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+#include <unistd.h> // MAC OS X only
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/file.h>
 #include <allegro5/allegro_image.h>
 #include "globals.h"
-#include "playfield.h"
 #include "game.h"
 
-bool running = true;
+void must_init(bool test, const char *description)
+{
+    if(test) return;
 
-const unsigned int ROTATIONS = 4;
-
-// Because a tetromino is basically a set of 'big pixels' that can be either on or off, it is quite
-// suitable and efficient to represent it as a bitmask rather than a matrix of integers.
-
-// Example for the S shape:
-
-// X . . .     1 0 0 0
-// X X . .  =  1 1 0 0  =  1000110001000000 (in binary)  =  0x8C40 (in hexadecimal)
-// . X . .     0 1 0 0
-// . . . .     0 0 0 0
-
-// . X X .     0 1 1 0
-// X X . .  =  1 1 0 0  =  0110110000000000 (in binary)  =  0x6C00 (in hexadecimal)
-// . . . .     0 0 0 0
-// . . . .     0 0 0 0
-unsigned int TETRIMINOS[7][ROTATIONS] = {
-	{0x4E00, 0x4640, 0x0E40, 0x4C40}, // T
-	{0x8C40, 0x6C00, 0x8C40, 0x6C00}, // S
-	{0x4C80, 0xC600, 0x4C80, 0xC600}, // Z
-	{0x4444, 0x0F00, 0x4444, 0x0F00}, // I
-	{0x44C0, 0x8E00, 0xC880, 0xE200}, // J
-	{0x88C0, 0xE800, 0xC440, 0x2E00}, // L
-	{0xCC00, 0xCC00, 0xCC00, 0xCC00}  // O
-};
-
-void draw_piece(unsigned int shape, ALLEGRO_BITMAP *mino);
+    printf("couldn't initialize %s\n", description);
+    exit(1);
+}
 
 int main()
 {
@@ -50,6 +30,9 @@ int main()
 		return 1;
 	}
 
+	// For MAC OS X bundle to find the resources
+	chdir(al_path_cstr(al_get_standard_path(ALLEGRO_RESOURCES_PATH), '/'));
+
 	if (!al_init_image_addon())
 	{
 		fprintf(stderr, "Couldn't initialize image addon.\n");
@@ -58,8 +41,6 @@ int main()
 
 	// Install keyboard
 	al_install_keyboard();
-
-	al_init_primitives_addon();
 
 	ALLEGRO_TIMER *timer = al_create_timer(1.0 / FPS);
 	ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();
@@ -79,17 +60,9 @@ int main()
 	al_register_event_source(queue, al_get_keyboard_event_source());
 	al_register_event_source(queue, al_get_display_event_source(disp));
 	al_register_event_source(queue, al_get_timer_event_source(timer));
-
-	Playfield *playfield = playfield_init();
-
-	ALLEGRO_EVENT event;
-
 	al_start_timer(timer);
 
-	char str[20];
-	char rot_str[20];
-	int rotation;
-	int tetrimino_num = rand() % 7;
+	game_main_loop(queue, font);
 
 	al_destroy_font(font);
 	al_destroy_display(disp);
@@ -97,23 +70,4 @@ int main()
 	al_destroy_event_queue(queue);
 
 	return 0;
-}
-
-void draw_piece(unsigned int shape, ALLEGRO_BITMAP *mino)
-{
-	unsigned int x, y, tx, ty;
-
-	for (x = 0; x < ROTATIONS; x++)
-	{
-		for (y = 0; y < ROTATIONS; y++)
-		{
-			tx = x * TETRIMINO_W;
-			ty = y * TETRIMINO_W;
-
-			if (shape & (0x8000 >> (y * ROTATIONS + x)))
-			{
-				al_draw_bitmap(mino, tx, ty, 0);
-			}
-		}
-	}
 }

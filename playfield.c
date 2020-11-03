@@ -12,10 +12,15 @@ Playfield *playfield_init()
   Playfield *field = (Playfield *)malloc((sizeof(Playfield)));
 
   ALLEGRO_BITMAP *background = al_load_bitmap("gfx/field.png");
+  ALLEGRO_BITMAP *mino = al_load_bitmap("gfx/mino.png");
 
   playfield_reset(field);
 
+  field->squares[9][9] = 1;
+  field->squares[6][2] = 1;
+  field->squares[9][0] = 1;
   field->background = background;
+  field->mino = mino;
 
   return field;
 }
@@ -35,8 +40,6 @@ void playfield_reset(Playfield *field)
 
 void playfield_draw(Playfield *playfield)
 {
-  ALLEGRO_BITMAP *mino = al_load_bitmap("gfx/mino.png");
-
   unsigned int x, y, tx, ty;
   unsigned int fx, fy;
   unsigned int marginh = 6;
@@ -47,6 +50,7 @@ void playfield_draw(Playfield *playfield)
 
   al_draw_bitmap(playfield->background, fx, fy, 0);
 
+  // Draw the squares already in place
   for (x = 0; x < 10; x++)
   {
     for (y = 0; y < 20; y++)
@@ -55,7 +59,11 @@ void playfield_draw(Playfield *playfield)
       {
         tx = x * (TETRIMINO_W + 1);
         ty = y * (TETRIMINO_W + 1);
-        al_draw_bitmap(mino, fx + marginh + tx, fy + marginv + ty, 0);
+        al_draw_bitmap(playfield->mino, fx + marginh + tx, fy + marginv + ty, 0);
+      }
+
+      if (playfield->current_mino->rotation & (0x8000 >> (y * ROTATIONS + x))) {
+        al_draw_bitmap(playfield->mino, tx, ty, 0);
       }
     }
   }
