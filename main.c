@@ -57,6 +57,8 @@ int main()
 	al_scale_transform(&t, scale_factor_x, scale_factor_y);
 	al_use_transform(&t);
 
+	al_set_new_display_flags(ALLEGRO_PROGRAMMABLE_PIPELINE | ALLEGRO_OPENGL);
+
 	al_register_event_source(queue, al_get_keyboard_event_source());
 	al_register_event_source(queue, al_get_display_event_source(disp));
 	al_register_event_source(queue, al_get_timer_event_source(timer));

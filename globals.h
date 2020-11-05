@@ -13,6 +13,6 @@
 #define ROTATIONS 4
 #define TETRIMINO_COUNT 7
 
-#define ROTATE_LEFT 1
-#define ROTATE_RIGHT 0
+#define LEFT 1
+#define RIGHT 0
 #endif
