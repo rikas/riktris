@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "playfield.h"
+#include "gfx.h"
 
 #define PLAYFIELD_WIDTH 272u
 #define PLAYFIELD_HEIGHT 534u
@@ -10,9 +11,6 @@
 Playfield *playfield_init()
 {
   Playfield *field = (Playfield *)malloc((sizeof(Playfield)));
-
-  ALLEGRO_BITMAP *background = al_load_bitmap("gfx/field.png");
-  ALLEGRO_BITMAP *mino = al_load_bitmap("gfx/mino.png");
 
   playfield_reset_matrix(field);
 
@@ -29,9 +27,6 @@ Playfield *playfield_init()
   field->matrix[4][19] = 1;
   field->matrix[3][19] = 1;
   field->matrix[2][19] = 1;
-
-  field->background = background;
-  field->mino = mino;
 
   return field;
 }
@@ -79,32 +74,14 @@ void playfield_reset_matrix(Playfield *field)
 
 void playfield_tetrimino_draw(Playfield *field, Tetrimino *mino)
 {
-  int x, y, tx, ty;
-
-  for (x = 0; x < ROTATIONS; x++)
-  {
-    for (y = 0; y < ROTATIONS; y++)
-    {
-      tx = x * (TETRIMINO_W + 1) + field->x + mino->col * (TETRIMINO_W + 1);
-      ty = y * (TETRIMINO_W + 1) + field->y + mino->row * (TETRIMINO_W + 1);
-
-      if (mino->rotation & (0x8000 >> (y * ROTATIONS + x)))
-      {
-        al_draw_bitmap(field->mino, tx, ty, 0);
-      }
-      else
-      {
-        al_draw_tinted_bitmap(field->mino, al_map_rgba_f(5, 0.2, 0.1, 0.2), tx, ty, 0);
-      }
-    }
-  }
+  tetrimino_draw(mino, field->x, field->y);
 }
 
 void playfield_draw(Playfield *field)
 {
   unsigned int x, y, tx, ty;
 
-  al_draw_bitmap(field->background, field->x0, field->y0, 0);
+  al_draw_bitmap(gfx->playfield, field->x0, field->y0, 0);
 
   // Draw the minos already in place
   for (x = 0; x < 10; x++)
@@ -115,7 +92,7 @@ void playfield_draw(Playfield *field)
       {
         tx = x * (TETRIMINO_W + 1);
         ty = y * (TETRIMINO_W + 1);
-        al_draw_bitmap(field->mino, field->x + tx, field->y + ty, 0);
+        al_draw_bitmap(gfx->square, field->x + tx, field->y + ty, 0);
       }
     }
   }

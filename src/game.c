@@ -4,7 +4,7 @@
 #include "playfield.h"
 #include "mino_queue.h"
 
-void game_main_loop(ALLEGRO_EVENT_QUEUE *queue, ALLEGRO_FONT *font)
+void game_main_loop(ALLEGRO_EVENT_QUEUE *al_queue, ALLEGRO_FONT *font)
 {
   GameState *state = (GameState *)malloc(sizeof(GameState));
   state->running = true;
@@ -13,10 +13,10 @@ void game_main_loop(ALLEGRO_EVENT_QUEUE *queue, ALLEGRO_FONT *font)
   bool running = true;
   bool redraw = false;
   bool tetrimino_dropping = false;
-  unsigned int speed = 1;
+  unsigned int speed = 5;
+  unsigned int tick = 0;
 
 	char str[20];
-	char rot_str[20];
 
   ALLEGRO_EVENT event;
   Playfield *playfield = playfield_init();
@@ -24,14 +24,20 @@ void game_main_loop(ALLEGRO_EVENT_QUEUE *queue, ALLEGRO_FONT *font)
 
   while (state->running)
   {
-    al_wait_for_event(queue, &event);
+    al_wait_for_event(al_queue, &event);
 
     if (event.type == ALLEGRO_EVENT_TIMER)
     {
       if (!state->tetrimino_dropping) {
-        playfield->current_mino = tetrimino_generate(speed);
+        playfield->current_mino = pop_mino(mino_queue);
         state->tetrimino_dropping = true;
+      } else {
+        if (tick >= 60 / speed) {
+          playfield->current_mino->row += 1;
+          tick = 0;
+        }
       }
+      tick++;
       redraw = true;
     }
     else if (event.type == ALLEGRO_EVENT_KEY_DOWN)
@@ -82,7 +88,7 @@ void game_main_loop(ALLEGRO_EVENT_QUEUE *queue, ALLEGRO_FONT *font)
       break;
     }
 
-    if (redraw && al_is_event_queue_empty(queue))
+    if (redraw && al_is_event_queue_empty(al_queue))
     {
       al_clear_to_color(al_map_rgb(0, 0, 0));
 
@@ -98,11 +104,31 @@ void game_main_loop(ALLEGRO_EVENT_QUEUE *queue, ALLEGRO_FONT *font)
       al_draw_text(font, al_map_rgb(255, 120, 120), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * 20, 0, str);
 
       bool drop = is_tetrimino_drop(playfield, playfield->current_mino);
-      sprintf(str, "Is touching?: %d", drop);
+      sprintf(str, "Served: %d", mino_queue->minos_served);
       al_draw_text(font, al_map_rgb(100, 255, 200), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * 21, 0, str);
 
       sprintf(str, "Tetrimino: %d, %d", playfield->current_mino->row, playfield->current_mino->col);
       al_draw_text(font, al_map_rgb(255, 255, 100), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * 22, 0, str);
+
+      queue_draw(mino_queue);
+
+      al_draw_text(font, al_map_rgb(240, 240, 240), 450, WINDOW_MARGIN + LINE_HEIGHT, 0, "Next");
+
+      int z, col;
+      for (z=0; z<14;z++) {
+        sprintf(str, "%d", mino_queue->next_minos[z]);
+
+        if (z<3) {
+          col = 200;
+        }
+        else if (z>=7) {
+          col = 100;
+        } else {
+          col = 20;
+        }
+
+        al_draw_text(font, al_map_rgb(255, col * 2, col), 550, WINDOW_MARGIN + LINE_HEIGHT * (5 + z), 0, str);
+      }
 
       if (state->tetrimino_dropping) {
         playfield_tetrimino_draw(playfield, playfield->current_mino);

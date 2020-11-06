@@ -10,6 +10,7 @@
 #include <allegro5/allegro_image.h>
 #include "globals.h"
 #include "game.h"
+#include "gfx.h"
 
 void must_init(bool test, const char *description)
 {
@@ -41,6 +42,8 @@ int main()
 
 	// Install keyboard
 	al_install_keyboard();
+
+	init_gfx();
 
 	ALLEGRO_TIMER *timer = al_create_timer(1.0 / FPS);
 	ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();

@@ -9,9 +9,6 @@
 #define FIELD_SQUARES_H 20u
 
 typedef struct Playfield {
-  ALLEGRO_BITMAP *background;
-  ALLEGRO_BITMAP *mino;
-
   unsigned int x0;
   unsigned int y0;
 

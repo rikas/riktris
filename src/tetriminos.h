@@ -3,6 +3,8 @@
 
 #include "globals.h"
 
+#define INVALID_TETRIMINO 666
+
 typedef enum TETRIMINO_TYPE {
   MINO_T = 0,
   MINO_S,
@@ -24,8 +26,9 @@ typedef struct Tetrimino {
 } Tetrimino;
 
 
-Tetrimino *tetrimino_generate(int speed);
+// Tetrimino *tetrimino_generate(int speed);
 void tetrimino_rotate(Tetrimino *mino, int direction);
 void tetrimino_move_down(Tetrimino *mino);
 void tetrimino_move(Tetrimino *mino, int direction);
+void tetrimino_draw(Tetrimino *mino, int x, int y);
 #endif
