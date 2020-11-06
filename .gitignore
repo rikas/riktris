@@ -1,4 +1,6 @@
 
 obj/*
+build/riktris
+build/Riktris.app
 .vscode/*
 .DS_Store
