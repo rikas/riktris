@@ -26,8 +26,11 @@ void playfield_reset_matrix(Playfield *field);
 Playfield *playfield_init();
 void playfield_draw(Playfield *field);
 void playfield_tetrimino_draw(Playfield *field, Tetrimino *mino);
-bool is_tetrimino_drop(Playfield *field, Tetrimino *mino);
+bool is_touching_down(Playfield *field, Tetrimino *mino);
+bool is_touching_left(Playfield *field, Tetrimino *mino);
+bool is_touching_right(Playfield *field, Tetrimino *mino);
 void playfield_add_to_matrix(Playfield *field, Tetrimino *mino);
 void playfield_remove_completed_lines(Playfield *field);
+void playfield_move_mino_down(Playfield *field);
 
 #endif

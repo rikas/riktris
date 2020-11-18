@@ -2,6 +2,7 @@
 #define __TETRIMINOS_H
 
 #include "globals.h"
+#include <allegro5/allegro5.h>
 
 #define INVALID_TETRIMINO 666
 
@@ -21,8 +22,12 @@ typedef struct Tetrimino {
   int rotation;
   int rotation_index;
   int speed;
-  unsigned int row;
-  unsigned int col;
+
+  bool imminent_drop;
+  bool dropped;
+
+  int col;
+  int row;
 } Tetrimino;
 
 

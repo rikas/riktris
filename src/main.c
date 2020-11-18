@@ -24,26 +24,15 @@ int main()
 {
 	// Seed random
 	srand(time(NULL));
+	must_init(al_init(), "allegro lib");
+	must_init(al_init_image_addon(), "image addon");
+	must_init(al_install_keyboard(), "keyboard");
 
-	if (!al_init())
-	{
-		fprintf(stderr, "Failed to initialize Allegro.\n");
-		return 1;
-	}
+	// Load all game graphics into memory
+	init_gfx();
 
 	// For MAC OS X bundle to find the resources
 	chdir(al_path_cstr(al_get_standard_path(ALLEGRO_RESOURCES_PATH), '/'));
-
-	if (!al_init_image_addon())
-	{
-		fprintf(stderr, "Couldn't initialize image addon.\n");
-		return 1;
-	}
-
-	// Install keyboard
-	al_install_keyboard();
-
-	init_gfx();
 
 	ALLEGRO_TIMER *timer = al_create_timer(1.0 / FPS);
 	ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();
@@ -61,13 +50,14 @@ int main()
 	al_use_transform(&t);
 
 	al_set_new_display_flags(ALLEGRO_PROGRAMMABLE_PIPELINE | ALLEGRO_OPENGL);
+	al_set_window_title(disp, "Riktris");
 
 	al_register_event_source(queue, al_get_keyboard_event_source());
 	al_register_event_source(queue, al_get_display_event_source(disp));
 	al_register_event_source(queue, al_get_timer_event_source(timer));
 	al_start_timer(timer);
 
-	game_main_loop(queue, font);
+	game_main_loop(queue, timer, font);
 
 	al_destroy_font(font);
 	al_destroy_display(disp);

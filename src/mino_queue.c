@@ -60,6 +60,8 @@ Tetrimino *tetrimino_generate(int type, int speed)
   mino->rotation = TETRIMINOS[type][0];
   mino->row = 0;
   mino->col = 0;
+  mino->imminent_drop = false;
+  mino->dropped = false;
 
   return mino;
 }

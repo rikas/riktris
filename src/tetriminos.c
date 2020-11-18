@@ -16,11 +16,11 @@ void tetrimino_draw(Tetrimino *mino, int pos_x, int pos_y) {
 
       if (mino->rotation & (0x8000 >> (y * ROTATIONS + x)))
       {
-        al_draw_bitmap(gfx->square, tx, ty, 0);
+        al_draw_bitmap(gfx->minos[mino->type], tx, ty, 0);
       }
       else
       {
-        // al_draw_tinted_bitmap(gfx->square, al_map_rgba_f(5, 0.2, 0.1, 0.2), tx, ty, 0);
+        // al_draw_tinted_bitmap(gfx->square, al_map_rgba_f(0.2, 0.2, 0.2, 0.5), tx, ty, 0);
       }
     }
   }
@@ -65,11 +65,6 @@ void tetrimino_move(Tetrimino *mino, int direction)
 	case RIGHT:
 		new_col = mino->col + 1;
 		break;
-	}
-
-	if (new_col < 0)
-	{
-		new_col = 0;
 	}
 
 	mino->col = new_col;
