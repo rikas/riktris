@@ -66,14 +66,17 @@ Tetrimino *tetrimino_generate(int type, int speed)
   return mino;
 }
 
-void generate_next_batch(MinoQueue *queue) {
+void generate_next_batch(MinoQueue *queue)
+{
   int new_indexes[TETRIMINO_COUNT] = {0, 1, 2, 3, 4, 5, 6};
   shuffle(&new_indexes[0], TETRIMINO_COUNT);
 
   int i, took = 0;
 
-  for (i=0; i<QUEUE_SIZE && took < TETRIMINO_COUNT; i++) {
-    if (queue->next_minos[i] == INVALID_TETRIMINO) {
+  for (i = 0; i < QUEUE_SIZE && took < TETRIMINO_COUNT; i++)
+  {
+    if (queue->next_minos[i] == INVALID_TETRIMINO)
+    {
       queue->next_minos[i] = new_indexes[took];
       took++;
     }
@@ -88,7 +91,8 @@ MinoQueue *queue_init(GameState *state)
 
   MinoQueue *queue = (MinoQueue *)malloc(sizeof(MinoQueue));
 
-  for (i=0; i<=QUEUE_SIZE; i++) {
+  for (i = 0; i <= QUEUE_SIZE; i++)
+  {
     queue->next_minos[i] = INVALID_TETRIMINO;
   }
 
