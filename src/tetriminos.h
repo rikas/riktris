@@ -31,9 +31,9 @@ typedef struct Tetrimino {
 } Tetrimino;
 
 
-// Tetrimino *tetrimino_generate(int speed);
-void tetrimino_rotate(Tetrimino *mino, int direction);
-void tetrimino_move_down(Tetrimino *mino);
-void tetrimino_move(Tetrimino *mino, int direction);
-void tetrimino_draw(Tetrimino *mino, int x, int y);
+bool is_square(Tetrimino *tetrimino, int x, int y);
+void tetrimino_rotate(Tetrimino *tetrimino, int direction);
+void tetrimino_move_down(Tetrimino *tetrimino);
+void tetrimino_move(Tetrimino *tetrimino, int direction);
+void tetrimino_draw(Tetrimino *tetrimino, int x, int y);
 #endif

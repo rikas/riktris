@@ -2,7 +2,8 @@
 
 GFX *gfx;
 
-void init_gfx() {
+void init_gfx()
+{
   gfx = (GFX *)malloc((sizeof(GFX)));
 
   gfx->playfield = al_load_bitmap("gfx/field.png");

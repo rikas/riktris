@@ -37,7 +37,7 @@ bool is_touching_left(Playfield *field, Tetrimino *mino)
   {
     for (int y = 0; y < ROTATIONS; y++)
     {
-      if (mino->rotation & (0x8000 >> (y * ROTATIONS + x)))
+      if (is_square(mino, x, y))
       {
         // Touching the left wall
         if ((mino->col + x) == 0)
@@ -63,7 +63,7 @@ bool is_touching_right(Playfield *field, Tetrimino *mino)
   {
     for (int y = 0; y < ROTATIONS; y++)
     {
-      if (mino->rotation & (0x8000 >> (y * ROTATIONS + x)))
+      if (is_square(mino, x, y))
       {
         // Touching the right wall
         if ((mino->col + x) == (FIELD_SQUARES_W - 1))
@@ -89,7 +89,7 @@ bool is_touching_down(Playfield *field, Tetrimino *mino)
   {
     for (int y = 0; y < ROTATIONS; y++)
     {
-      if (mino->rotation & (0x8000 >> (y * ROTATIONS + x)))
+      if (is_square(mino, x, y))
       {
         // If next line is the last line of the field then it's a drop!
         if ((mino->row + y) == (FIELD_SQUARES_H - 1))
@@ -157,7 +157,7 @@ void playfield_add_to_matrix(Playfield *field, Tetrimino *mino)
   {
     for (int y = 0; y < ROTATIONS; y++)
     {
-      if (mino->rotation & (0x8000 >> (y * ROTATIONS + x)))
+      if (is_square(mino, x, y))
       {
         // Add the mino to the matrix. The number will be the mino type + 1 since we can't have it
         // as zero (if the type == MINO_T).
