@@ -1,6 +1,4 @@
-#include "globals.h"
 #include "playfield.h"
-#include "gfx.h"
 
 #define PLAYFIELD_WIDTH 272u
 #define PLAYFIELD_HEIGHT 534u
@@ -109,6 +107,42 @@ bool is_touching_down(Playfield *field, Tetrimino *mino)
   return false;
 }
 
+int max_drop_row(Playfield *field, Tetrimino *tetrimino)
+{
+  int max_row = FIELD_SQUARES_H - 1;
+
+  for (int x = 0; x < ROTATIONS; x++)
+  {
+    for (int y = 0; y < ROTATIONS; y++)
+    {
+      if (is_square(tetrimino, x, y))
+      {
+        for (int row = tetrimino->row; row < FIELD_SQUARES_H; row++)
+        {
+          if ((row + y) == (FIELD_SQUARES_H - 1))
+          {
+            max_row = min(max_row, row);
+          }
+
+          if (field->matrix[tetrimino->col + x][row + y + 1])
+          {
+            max_row = min(max_row, row);
+          }
+        }
+      }
+    }
+  }
+
+  return max_row;
+}
+
+void playfield_hard_drop(Playfield *field, Tetrimino *tetrimino)
+{
+  tetrimino->row = max_drop_row(field, tetrimino);
+  tetrimino->dropped = true;
+  playfield_add_to_matrix(field, tetrimino);
+}
+
 void playfield_reset_matrix(Playfield *field)
 {
   unsigned int x, y;
@@ -122,9 +156,16 @@ void playfield_reset_matrix(Playfield *field)
   }
 }
 
-void playfield_tetrimino_draw(Playfield *field, Tetrimino *mino)
+void playfield_tetrimino_draw(Playfield *field, Tetrimino *tetrimino)
 {
-  tetrimino_draw(mino, field->x, field->y);
+  t_draw(tetrimino, field->x, field->y, MINO_BLOCK);
+}
+
+void playfield_ghost_draw(Playfield *field, Tetrimino *tetrimino)
+{
+  int max_row = max_drop_row(field, tetrimino);
+
+  t_draw(tetrimino, field->x, field->y + (max_row - tetrimino->row) * (TETRIMINO_W + 1), MINO_GHOST);
 }
 
 void playfield_draw(Playfield *field)
@@ -198,27 +239,27 @@ void playfield_remove_completed_lines(Playfield *field)
   }
 }
 
-void playfield_move_mino_down(Playfield *field)
+void playfield_move_mino_down(Playfield *field, Tetrimino *tetrimino)
 {
-  bool touching_down = is_touching_down(field, field->current_mino);
+  bool touching_down = is_touching_down(field, tetrimino);
 
   if (touching_down)
   {
-    if (field->current_mino->imminent_drop)
+    if (tetrimino->imminent_drop)
     {
-      field->current_mino->dropped = true;
-      playfield_add_to_matrix(field, field->current_mino);
+      tetrimino->dropped = true;
+      playfield_add_to_matrix(field, tetrimino);
     }
     else
     {
-      field->current_mino->imminent_drop = true;
-      tetrimino_move_down(field->current_mino);
+      tetrimino->imminent_drop = true;
+      t_move_down(tetrimino);
     }
   }
   else
   {
-    tetrimino_move_down(field->current_mino);
+    t_move_down(tetrimino);
   }
 
-  field->current_mino->imminent_drop = is_touching_down(field, field->current_mino);
+  tetrimino->imminent_drop = is_touching_down(field, tetrimino);
 }

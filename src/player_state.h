@@ -1,14 +1,12 @@
-#ifndef __GAME_H
-#define __GAME_H
+#ifndef __PLAYER_STATE_H
+#define __PLAYER_STATE_H
 
 #include <allegro5/allegro5.h>
-#include <allegro5/allegro_font.h>
 #include "tetriminos.h"
 #include "playfield.h"
 #include "mino_queue.h"
 
-typedef struct GameState {
-  bool running;
+typedef struct Player {
   bool tetrimino_falling;
   unsigned int speed;
   Tetrimino *on_hold;
@@ -16,8 +14,6 @@ typedef struct GameState {
   Tetrimino *next_batch;
   Playfield *playfield;
   MinoQueue *next_queue;
-} GameState;
-
-void game_main_loop(ALLEGRO_EVENT_QUEUE *queue, ALLEGRO_TIMER *timer, ALLEGRO_FONT *font);
+} Player;
 
 #endif

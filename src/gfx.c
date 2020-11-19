@@ -16,4 +16,27 @@ void init_gfx()
   gfx->minos[5] = al_load_bitmap("gfx/mino_l.png");
   gfx->minos[6] = al_load_bitmap("gfx/mino_o.png");
   gfx->minos[7] = al_load_bitmap("gfx/mino_x.png");
+
+  gfx->ghosts[0] = al_load_bitmap("gfx/mino_ghost_t.png");
+  gfx->ghosts[1] = al_load_bitmap("gfx/mino_ghost_s.png");
+  gfx->ghosts[2] = al_load_bitmap("gfx/mino_ghost_z.png");
+  gfx->ghosts[3] = al_load_bitmap("gfx/mino_ghost_i.png");
+  gfx->ghosts[4] = al_load_bitmap("gfx/mino_ghost_j.png");
+  gfx->ghosts[5] = al_load_bitmap("gfx/mino_ghost_l.png");
+  gfx->ghosts[6] = al_load_bitmap("gfx/mino_ghost_o.png");
+}
+
+void destroy_gfx()
+{
+  al_destroy_bitmap(gfx->playfield);
+
+  for (int i = 0; i < TETRIMINO_COUNT; i++)
+  {
+    al_destroy_bitmap(gfx->minos[i]);
+    al_destroy_bitmap(gfx->ghosts[i]);
+  }
+
+  al_destroy_bitmap(gfx->minos[TETRIMINO_COUNT]);
+
+  free(gfx);
 }

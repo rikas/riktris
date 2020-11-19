@@ -34,6 +34,7 @@ int main()
 	// For MAC OS X bundle to find the resources
 	chdir(al_path_cstr(al_get_standard_path(ALLEGRO_RESOURCES_PATH), '/'));
 
+
 	ALLEGRO_TIMER *timer = al_create_timer(1.0 / FPS);
 	ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();
 	ALLEGRO_DISPLAY *disp = al_create_display(WINDOW_W * 2, WINDOW_H * 2);
@@ -63,6 +64,9 @@ int main()
 	al_destroy_display(disp);
 	al_destroy_timer(timer);
 	al_destroy_event_queue(queue);
+
+	destroy_config();
+	destroy_gfx();
 
 	return 0;
 }

@@ -3,161 +3,189 @@
 #include "game.h"
 #include "playfield.h"
 #include "mino_queue.h"
+#include "input.h"
+#include "config.h"
 
-void game_main_loop(ALLEGRO_EVENT_QUEUE *al_queue, ALLEGRO_TIMER *timer, ALLEGRO_FONT *font)
+void init_game_state(GameState *state)
+{
+  state->running = true;
+  state->tetrimino_falling = false;
+  state->speed = 80;
+  state->playfield = playfield_init();
+  state->next_queue = queue_init();
+}
+
+void read_inputs(GameState *state)
+{
+  if (delayed_press(config->key_down))
+  {
+    playfield_move_mino_down(state->playfield, state->current_tetrimino);
+  }
+
+  if (delayed_press(config->key_right))
+  {
+    if (!is_touching_right(state->playfield, state->current_tetrimino))
+      t_move(state->current_tetrimino, RIGHT);
+  }
+
+  if (delayed_press(config->key_left))
+  {
+    if (!is_touching_left(state->playfield, state->current_tetrimino))
+      t_move(state->current_tetrimino, LEFT);
+  }
+
+  if (delayed_press(config->key_rotate_right))
+  {
+    t_rotate(state->current_tetrimino, RIGHT);
+  }
+
+  if (delayed_press(config->key_rotate_left))
+  {
+    t_rotate(state->current_tetrimino, LEFT);
+  }
+
+  if (delayed_press(ALLEGRO_KEY_ESCAPE))
+  {
+    state->running = false;
+  }
+
+  if (delayed_press(ALLEGRO_KEY_ENTER))
+  {
+    state->current_tetrimino->dropped = true;
+    state->tetrimino_falling = false;
+  }
+
+  if (delayed_press(config->key_hard_drop))
+  {
+    playfield_hard_drop(state->playfield, state->current_tetrimino);
+  }
+}
+
+void update_game_state(GameState *state)
+{
+  if (!state->tetrimino_falling)
+  {
+    state->current_tetrimino = pop_mino(state->next_queue, state->speed);
+    state->tetrimino_falling = true;
+  }
+
+  read_inputs(state);
+  input_refresh();
+
+  // If the current mino dropped state is true we want to also update the game state so we can pop
+  // another tetrimino from the queue.
+  state->tetrimino_falling = !state->current_tetrimino->dropped;
+
+  playfield_remove_completed_lines(state->playfield);
+}
+
+void draw_game_state()
+{
+}
+
+void draw_debug_info(GameState *state, ALLEGRO_FONT *font)
+{
+  int line = 2;
+  char str[20];
+
+  sprintf(str, "Tetrimino: %d", state->current_tetrimino->type);
+  al_draw_text(font, al_map_rgb(255, 255, 255), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
+
+  sprintf(str, "Rotation #%d", state->current_tetrimino->rotation_index);
+  al_draw_text(font, al_map_rgb(255, 145, 255), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
+
+  sprintf(str, "Rotation HEX: %x", state->current_tetrimino->rotation);
+  al_draw_text(font, al_map_rgb(255, 120, 120), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
+
+  sprintf(str, "Played: %d", state->next_queue->minos_served);
+  al_draw_text(font, al_map_rgb(100, 255, 200), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
+
+  sprintf(str, "Position: %d, %d", state->current_tetrimino->row, state->current_tetrimino->col);
+  al_draw_text(font, al_map_rgb(255, 255, 100), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
+
+  sprintf(str, "Touching left?: %d", is_touching_left(state->playfield, state->current_tetrimino));
+  al_draw_text(font, al_map_rgb(245, 155, 50), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
+
+  sprintf(str, "Touching right?: %d", is_touching_right(state->playfield, state->current_tetrimino));
+  al_draw_text(font, al_map_rgb(245, 155, 50), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
+
+  sprintf(str, "Touching down?: %d", is_touching_down(state->playfield, state->current_tetrimino));
+  al_draw_text(font, al_map_rgb(245, 155, 50), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
+
+  sprintf(str, "Imminent drop?: %d", state->current_tetrimino->imminent_drop);
+  al_draw_text(font, al_map_rgb(145, 155, 250), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
+
+  sprintf(str, "HARD DROP: %d", config->key_hard_drop);
+  al_draw_text(font, al_map_rgb(145, 155, 250), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
+}
+
+void game_main_loop(ALLEGRO_EVENT_QUEUE *event_queue, ALLEGRO_TIMER *timer, ALLEGRO_FONT *font)
 {
   GameState *state = (GameState *)malloc(sizeof(GameState));
-  state->running = true;
-  state->tetrimino_dropping = false;
-  state->speed = 80;
+  init_game_state(state);
 
-  bool running = true;
-  bool redraw = false;
-  bool tetrimino_dropping = false;
+  input_init();
+  config_load();
 
-	char str[20];
-
-  unsigned char key[ALLEGRO_KEY_MAX];
-  memset(key, 0, sizeof(key));
-
-  ALLEGRO_EVENT event;
-  Playfield *playfield = playfield_init();
-  MinoQueue *mino_queue = queue_init(state);
+  bool should_redraw = false;
 
   // Timer to make the tetriminos fall
   ALLEGRO_TIMER *tetrimino_drop_timer = al_create_timer(1);
-  al_register_event_source(al_queue, al_get_timer_event_source(tetrimino_drop_timer));
+  al_register_event_source(event_queue, al_get_timer_event_source(tetrimino_drop_timer));
   al_start_timer(tetrimino_drop_timer);
-
-  ALLEGRO_KEYBOARD_STATE *keyboard;
-  double ticks = al_get_timer_count(timer);
 
   while (state->running)
   {
-    al_wait_for_event(al_queue, &event);
-    if (event.type == ALLEGRO_EVENT_TIMER && event.timer.source == tetrimino_drop_timer) {
-      playfield_move_mino_down(playfield);
-    }
-    if (event.type == ALLEGRO_EVENT_TIMER && event.timer.source != tetrimino_drop_timer)
+    ALLEGRO_EVENT event;
+    al_wait_for_event(event_queue, &event);
+
+    switch (event.type)
     {
-      if (!state->tetrimino_dropping) {
-        playfield->current_mino = pop_mino(mino_queue);
-        state->tetrimino_dropping = true;
+    case ALLEGRO_EVENT_TIMER:
+      should_redraw = true;
+
+      if (event.timer.source == tetrimino_drop_timer) {
+        // playfield_move_mino_down(state->playfield, state->current_tetrimino);
       } else {
-        if (key[ALLEGRO_KEY_S])
-          playfield_move_mino_down(playfield);
-        if (key[ALLEGRO_KEY_D])
-          if (!is_touching_right(playfield, playfield->current_mino))
-            tetrimino_move(playfield->current_mino, RIGHT);
-        if (key[ALLEGRO_KEY_A])
-          if (!is_touching_left(playfield, playfield->current_mino))
-            tetrimino_move(playfield->current_mino, LEFT);
-
-        for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
-          key[i] &= KEY_SEEN;
+        update_game_state(state);
       }
-      redraw = true;
-    }
-    else if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
-      key[event.keyboard.keycode] = KEY_SEEN | KEY_RELEASED;
-
-      switch (event.keyboard.keycode) {
-        case ALLEGRO_KEY_I:
-          tetrimino_rotate(playfield->current_mino, LEFT);
-          break;
-        case ALLEGRO_KEY_O:
-          tetrimino_rotate(playfield->current_mino, RIGHT);
-          break;
-        case ALLEGRO_KEY_ESCAPE:
-          state->running = false;
-          break;
-        case ALLEGRO_KEY_SPACE:
-          state->tetrimino_dropping = false;
-        // case ALLEGRO_KEY_S:
-        //   playfield_move_mino_down(playfield);
-        //   break;
-        // case ALLEGRO_KEY_A:
-        //   if (!is_touching_left(playfield, playfield->current_mino))
-        //     tetrimino_move(playfield->current_mino, LEFT);
-        //   break;
-        // case ALLEGRO_KEY_D:
-        //   if (!is_touching_right(playfield, playfield->current_mino))
-        //     tetrimino_move(playfield->current_mino, RIGHT);
-        //   break;
-      }
-      redraw = true;
-    }
-    else if (event.type == ALLEGRO_EVENT_KEY_UP) {
-      key[event.keyboard.keycode] &= KEY_RELEASED;
-    }
-    else if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
-    {
+      // } else {
+      //
+      // playfield_move_mino_down(state->playfield, state->current_tetrimino);
+      // }
+      break;
+    case ALLEGRO_EVENT_KEY_DOWN:
+      key_down(event.keyboard.keycode);
+      break;
+    case ALLEGRO_EVENT_KEY_UP:
+      key_up(event.keyboard.keycode);
+      break;
+    case ALLEGRO_EVENT_DISPLAY_CLOSE:
       state->running = false;
+      break;
     }
 
-    // if (frames % state->speed <= 0) {
-    //   playfield_move_mino_down(playfield);
-
-    //   redraw = true;
-    // }
-
-    // If the current mino dropped state is true we want to also update the game state so we can pop
-    // another tetrimino from the queue.
-    state->tetrimino_dropping = !playfield->current_mino->dropped;
-
-    if (redraw && al_is_event_queue_empty(al_queue))
+    if (should_redraw && al_is_event_queue_empty(event_queue))
     {
+      should_redraw = false;
+
       al_clear_to_color(al_map_rgb(0, 0, 0));
 
-      playfield_draw(playfield);
+      playfield_draw(state->playfield);
 
-      int line = 2;
-      sprintf(str, "Tetrimino: %d", playfield->current_mino->type);
-      al_draw_text(font, al_map_rgb(255, 255, 255), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
+      draw_debug_info(state, font);
 
-      sprintf(str, "Rotation #%d", playfield->current_mino->rotation_index);
-      al_draw_text(font, al_map_rgb(255, 145, 255), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
-
-      sprintf(str, "Rotation HEX: %x", playfield->current_mino->rotation);
-      al_draw_text(font, al_map_rgb(255, 120, 120), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
-
-      sprintf(str, "Played: %d", mino_queue->minos_served);
-      al_draw_text(font, al_map_rgb(100, 255, 200), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
-
-      sprintf(str, "Position: %d, %d", playfield->current_mino->row, playfield->current_mino->col);
-      al_draw_text(font, al_map_rgb(255, 255, 100), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
-
-      sprintf(str, "Touching left?: %d", is_touching_left(playfield, playfield->current_mino));
-      al_draw_text(font, al_map_rgb(245, 155, 50), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
-
-      sprintf(str, "Touching right?: %d", is_touching_right(playfield, playfield->current_mino));
-      al_draw_text(font, al_map_rgb(245, 155, 50), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
-
-      sprintf(str, "Touching down?: %d", is_touching_down(playfield, playfield->current_mino));
-      al_draw_text(font, al_map_rgb(245, 155, 50), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
-
-      sprintf(str, "Imminent drop?: %d", playfield->current_mino->imminent_drop);
-      al_draw_text(font, al_map_rgb(145, 155, 250), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
-
-      sprintf(str, "Timer speed: %d", al_get_timer_speed(tetrimino_drop_timer));
-      al_draw_text(font, al_map_rgb(245, 215, 210), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
-
-      sprintf(str, "Timer count: %d", al_get_timer_count(timer));
-      al_draw_text(font, al_map_rgb(245, 215, 210), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
-
-      queue_draw(mino_queue);
+      queue_draw(state->next_queue);
 
       al_draw_text(font, al_map_rgb(240, 240, 240), 450, WINDOW_MARGIN + LINE_HEIGHT, 0, "Next");
 
-      if (state->tetrimino_dropping) {
-        playfield_tetrimino_draw(playfield, playfield->current_mino);
+      if (state->tetrimino_falling)
+      {
+        playfield_ghost_draw(state->playfield, state->current_tetrimino);
+        playfield_tetrimino_draw(state->playfield, state->current_tetrimino);
       }
 
-      playfield_remove_completed_lines(playfield);
-
       al_flip_display();
-
-      redraw = false;
     }
   }
 }
