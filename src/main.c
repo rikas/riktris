@@ -11,6 +11,7 @@
 #include "globals.h"
 #include "game.h"
 #include "gfx.h"
+#include "config.h"
 
 void must_init(bool test, const char *description)
 {

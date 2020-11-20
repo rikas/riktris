@@ -10,8 +10,9 @@
 typedef struct GameState {
   bool running;
   bool tetrimino_falling;
+  bool held_tetrimino;
   unsigned int speed;
-  Tetrimino *on_hold;
+  Tetrimino *tetrimino_on_hold;
   Tetrimino *current_tetrimino;
   Tetrimino *next_batch;
   Playfield *playfield;

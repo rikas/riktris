@@ -10,38 +10,90 @@ void init_game_state(GameState *state)
 {
   state->running = true;
   state->tetrimino_falling = false;
+  state->held_tetrimino = false;
+  state->tetrimino_on_hold = 0;
   state->speed = 80;
   state->playfield = playfield_init();
   state->next_queue = queue_init();
 }
 
+void draw_held_tetrimino(GameState *state)
+{
+  if (!state->tetrimino_on_hold) {
+    return;
+  }
+
+  t_draw(state->tetrimino_on_hold, -50, 80, MINO_BLOCK);
+}
+
+void hold_current_tetrimino(GameState *state)
+{
+  if (state->held_tetrimino) {
+    return;
+  }
+
+  Tetrimino *temp = state->tetrimino_on_hold;
+  state->tetrimino_on_hold = state->current_tetrimino;
+
+  t_reset(state->tetrimino_on_hold);
+
+  if (temp) {
+    state->current_tetrimino = temp;
+  } else {
+    state->current_tetrimino = pop_mino(state->next_queue, state->speed);
+  }
+
+  state->held_tetrimino = true;
+}
+
+// When reading the inputs there's a delay for repeating the same input (if the user keeps the key
+// pressed). By calling delayed_press() we ensure that the action is done only after a certain
+// timeout (which may be different, depending on the key code).
 void read_inputs(GameState *state)
 {
+  // Key <DOWN> was pressed
   if (delayed_press(config->key_down))
   {
     playfield_move_mino_down(state->playfield, state->current_tetrimino);
   }
 
+  // Key <RIGHT> was pressed
   if (delayed_press(config->key_right))
   {
     if (!is_touching_right(state->playfield, state->current_tetrimino))
       t_move(state->current_tetrimino, RIGHT);
   }
 
+  // Key <LEFT> was pressed
   if (delayed_press(config->key_left))
   {
     if (!is_touching_left(state->playfield, state->current_tetrimino))
       t_move(state->current_tetrimino, LEFT);
   }
 
+  // Key <ROTATE_RIGHT> was pressed
   if (delayed_press(config->key_rotate_right))
   {
     t_rotate(state->current_tetrimino, RIGHT);
   }
 
+  // Key <ROTATE_LEFT> was pressed
   if (delayed_press(config->key_rotate_left))
   {
     t_rotate(state->current_tetrimino, LEFT);
+  }
+
+  // Key <HOLD> was pressed
+  if (delayed_press(config->key_hold))
+  {
+    hold_current_tetrimino(state);
+  }
+
+  // Key <HARD_DROP> was pressed
+  if (delayed_press(config->key_hard_drop))
+  {
+    playfield_hard_drop(state->playfield, state->current_tetrimino);
+    state->held_tetrimino = false;
   }
 
   if (delayed_press(ALLEGRO_KEY_ESCAPE))
@@ -52,13 +104,9 @@ void read_inputs(GameState *state)
   if (delayed_press(ALLEGRO_KEY_ENTER))
   {
     state->current_tetrimino->dropped = true;
-    state->tetrimino_falling = false;
+    state->held_tetrimino = false;
   }
 
-  if (delayed_press(config->key_hard_drop))
-  {
-    playfield_hard_drop(state->playfield, state->current_tetrimino);
-  }
 }
 
 void update_game_state(GameState *state)
@@ -85,8 +133,8 @@ void draw_game_state()
 
 void draw_debug_info(GameState *state, ALLEGRO_FONT *font)
 {
-  int line = 2;
-  char str[20];
+  int line = 13;
+  char str[32];
 
   sprintf(str, "Tetrimino: %d", state->current_tetrimino->type);
   al_draw_text(font, al_map_rgb(255, 255, 255), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
@@ -175,9 +223,11 @@ void game_main_loop(ALLEGRO_EVENT_QUEUE *event_queue, ALLEGRO_TIMER *timer, ALLE
 
       draw_debug_info(state, font);
 
-      queue_draw(state->next_queue);
+      al_draw_text(font, al_map_rgb(240, 240, 240), 30, WINDOW_MARGIN + LINE_HEIGHT, 0, "Hold");
+      draw_held_tetrimino(state);
 
       al_draw_text(font, al_map_rgb(240, 240, 240), 450, WINDOW_MARGIN + LINE_HEIGHT, 0, "Next");
+      queue_draw(state->next_queue);
 
       if (state->tetrimino_falling)
       {
