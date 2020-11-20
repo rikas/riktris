@@ -37,6 +37,10 @@ void save_config()
 
 void destroy_config()
 {
+  if (!config) {
+    return;
+  }
+
   al_destroy_config(config->file);
   free(config);
 }

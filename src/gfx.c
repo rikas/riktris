@@ -28,6 +28,10 @@ void init_gfx()
 
 void destroy_gfx()
 {
+  if (!gfx) {
+    return;
+  }
+
   al_destroy_bitmap(gfx->playfield);
 
   for (int i = 0; i < TETRIMINO_COUNT; i++)
