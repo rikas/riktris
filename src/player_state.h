@@ -6,7 +6,7 @@
 #include "playfield.h"
 #include "mino_queue.h"
 
-typedef struct Player {
+typedef struct PlayerState {
   bool tetrimino_falling;
   unsigned int speed;
   Tetrimino *on_hold;
@@ -14,6 +14,6 @@ typedef struct Player {
   Tetrimino *next_batch;
   Playfield *playfield;
   MinoQueue *next_queue;
-} Player;
+} PlayerState;
 
 #endif
