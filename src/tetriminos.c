@@ -10,16 +10,22 @@ Tetrimino *t_generate(int type, int speed)
 
 	mino->type = type;
 	mino->speed = speed;
-	mino->rotation_index = 0;
-	mino->rotation = TETRIMINOS[type][0];
-	mino->row = 0;
-	mino->col = 3;
-	mino->imminent_drop = false;
-	mino->dropped = false;
 
 	memcpy(mino->rotations, TETRIMINOS[type], sizeof(TETRIMINOS[type]));
 
+	t_reset(mino);
+
 	return mino;
+}
+
+void t_reset(Tetrimino *tetrimino)
+{
+	tetrimino->row = 0;
+	tetrimino->col = 3;
+	tetrimino->imminent_drop = false;
+	tetrimino->dropped = false;
+	tetrimino->rotation_index = 0;
+	tetrimino->rotation = TETRIMINOS[tetrimino->type][0];
 }
 
 // Checks if the given tetrimino has a 1 for the given x and y coordinates. For that we need to

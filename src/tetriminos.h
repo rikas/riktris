@@ -78,4 +78,5 @@ void t_rotate(Tetrimino *tetrimino, int direction);
 void t_move_down(Tetrimino *tetrimino);
 void t_move(Tetrimino *tetrimino, int direction);
 void t_draw(Tetrimino *tetrimino, int x, int y, int draw_type);
+void t_reset(Tetrimino *tetrimino);
 #endif
