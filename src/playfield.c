@@ -258,6 +258,64 @@ void playfield_remove_completed_lines(Playfield *field)
   }
 }
 
+// Try to wall kick a tetrimino. This should be called only if the tetrimino is overlapping existing
+// minos in the playfield or out of bounds. Depending on the rotation being executed different
+// coordinates will be tested for the wall kick.
+//
+// This function will return true if it successfully wall kicked the tetrimino or false otherwise.
+bool wall_kick(Playfield *field, Tetrimino *tetrimino, int from, int to)
+{
+  // Will store the kick coordinates for the given rotation
+  KickData kicks;
+  KickData *kick_data;
+
+  if (tetrimino->type == MINO_I) {
+    kick_data = WALL_KICKS_I;
+  } else {
+    kick_data = WALL_KICKS;
+  }
+
+  if (from == 0 && to == 1) {
+    memcpy(kicks, kick_data[0], sizeof(kicks));
+  }
+  else if (from == 1 && to == 0) {
+    memcpy(kicks, kick_data[1], sizeof(kicks));
+  }
+  else if (from == 1 && to == 2) {
+    memcpy(kicks, kick_data[2], sizeof(kicks));
+  }
+  else if (from == 2 && to == 1) {
+    memcpy(kicks, kick_data[3], sizeof(kicks));
+  }
+  else if (from == 2 && to == 3) {
+    memcpy(kicks, kick_data[4], sizeof(kicks));
+  }
+  else if (from == 3 && to == 2) {
+    memcpy(kicks, kick_data[5], sizeof(kicks));
+  }
+  else if (from == 3 && to == 0) {
+    memcpy(kicks, kick_data[6], sizeof(kicks));
+  }
+  else if (from == 0 && to == 3) {
+    memcpy(kicks, kick_data[7], sizeof(kicks));
+  }
+
+  int orig_col = tetrimino->col;
+  int orig_row = tetrimino->row;
+
+  // Tries wall kicks until we're done
+  for (int i=0; i<4; i++) {
+    tetrimino->col = orig_col + kicks[i][0];
+    tetrimino->row = orig_row + kicks[i][1];
+
+    if (!overlaps(field, tetrimino)) {
+      return true;
+    }
+  }
+
+  // We couldn't wall kick!
+  return false;
+}
 void playfield_move_mino_down(Playfield *field, Tetrimino *tetrimino)
 {
   bool touching_down = is_touching_down(field, tetrimino);
