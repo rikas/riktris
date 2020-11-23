@@ -74,13 +74,13 @@ void read_inputs(GameState *state)
   // Key <ROTATE_RIGHT> was pressed
   if (delayed_press(config->key_rotate_right))
   {
-    t_rotate(state->current_tetrimino, RIGHT);
+    playfield_rotate_tetrimino(state->playfield, state->current_tetrimino, RIGHT);
   }
 
   // Key <ROTATE_LEFT> was pressed
   if (delayed_press(config->key_rotate_left))
   {
-    t_rotate(state->current_tetrimino, LEFT);
+    playfield_rotate_tetrimino(state->playfield, state->current_tetrimino, LEFT);
   }
 
   // Key <HOLD> was pressed
