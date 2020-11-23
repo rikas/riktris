@@ -82,6 +82,7 @@ void t_rotate(Tetrimino *mino, int direction)
 	{
 		new_index = ROTATIONS - 1;
 	}
+
 	mino->rotation_index = new_index;
 }
 
