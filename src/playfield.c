@@ -18,13 +18,8 @@ Playfield *playfield_init()
   field->y = field->y0 + PLAYFIELD_PADDING_Y;
 
   field->matrix[9][19] = 1;
-  field->matrix[8][19] = 2;
-  field->matrix[7][19] = 3;
-  field->matrix[6][19] = 4;
-  field->matrix[5][19] = 5;
-  field->matrix[4][19] = 6;
-  field->matrix[3][19] = 1;
-  field->matrix[2][19] = 1;
+  field->matrix[8][19] = 1;
+  field->matrix[7][19] = 1;
 
   return field;
 }
