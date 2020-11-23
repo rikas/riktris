@@ -92,7 +92,6 @@ typedef struct Tetrimino
 {
   TETRIMINO_TYPE type;
   int rotations[ROTATIONS];
-  int rotation;
   int rotation_index;
   int speed;
 
