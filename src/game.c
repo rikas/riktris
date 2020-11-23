@@ -194,10 +194,6 @@ void game_main_loop(ALLEGRO_EVENT_QUEUE *event_queue, ALLEGRO_TIMER *timer, ALLE
       } else {
         update_game_state(state);
       }
-      // } else {
-      //
-      // playfield_move_mino_down(state->playfield, state->current_tetrimino);
-      // }
       break;
     case ALLEGRO_EVENT_KEY_DOWN:
       key_down(event.keyboard.keycode);
