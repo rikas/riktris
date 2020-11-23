@@ -26,13 +26,12 @@ void t_reset(Tetrimino *tetrimino)
 	tetrimino->imminent_drop = false;
 	tetrimino->dropped = false;
 	tetrimino->rotation_index = 0;
-	tetrimino->rotation = TETRIMINOS[tetrimino->type][0];
 }
 
 // Checks if the given tetrimino has a 1 for the given x and y coordinates. For that we need to
-bool is_square(Tetrimino *mino, int x, int y)
+bool is_square(Tetrimino *tetrimino, int x, int y)
 {
-	return mino->rotation & (0x8000 >> (y * ROTATIONS + x));
+	return tetrimino->rotations[tetrimino->rotation_index] & (0x8000 >> (y * ROTATIONS + x));
 }
 
 void t_draw(Tetrimino *tetrimino, int pos_x, int pos_y, int draw_type)
@@ -84,7 +83,6 @@ void t_rotate(Tetrimino *mino, int direction)
 		new_index = ROTATIONS - 1;
 	}
 	mino->rotation_index = new_index;
-	mino->rotation = mino->rotations[new_index];
 }
 
 void t_move_down(Tetrimino *mino)
