@@ -24,6 +24,30 @@ Playfield *playfield_init()
   return field;
 }
 
+bool overlaps(Playfield *field, Tetrimino *tetrimino)
+{
+  for (int x = 0; x < ROTATIONS; x++)
+  {
+    for (int y = 0; y < ROTATIONS; y++)
+    {
+      if (is_square(tetrimino, x, y))
+      {
+        if (field->matrix[tetrimino->col + x][tetrimino->row + y])
+        {
+          return true;
+        }
+
+        if ((tetrimino->col + x) > (FIELD_SQUARES_W - 1) ||
+          (tetrimino->row + y) > (FIELD_SQUARES_H - 1)) {
+            return true;
+          }
+      }
+    }
+  }
+
+  return false;
+}
+
 bool is_touching_left(Playfield *field, Tetrimino *mino)
 {
   for (int x = 0; x < ROTATIONS; x++)
