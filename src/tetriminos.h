@@ -40,6 +40,37 @@ static int TETRIMINOS[TETRIMINO_COUNT][ROTATIONS] = {
     {0x6600, 0x6600, 0x6600, 0x6600}  // O (SRS)
 };
 
+// The wall kick data is always an array of 4 pairs of coordinates to replace row & col for the
+// rotating tetrimino.
+typedef int KickData[4][2];
+
+// When the player attempts to rotate a tetromino, but the position it would normally occupy after
+// basic rotation is obstructed, (either by the wall or floor of the playfield, or by the stack),
+// the game will attempt to "kick" the tetromino into an alternative position nearby
+// Wall kick tables taken from https://tetris.fandom.com/wiki/SRS
+static KickData WALL_KICKS[8] = {
+  { { -1, 0 }, { -1, 1 }, { 0, -2 }, { -1, -2 } },
+  { { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } },
+  { { 1, 0 }, { 1, -1 }, { 0, 2 }, { 1, 2 } },
+  { { -1, 0 }, { -1, 1 }, { 0, -2 }, { -1, -2 } },
+  { { 1, 0 }, { 1, 1 }, { 0, -2 }, { 1, -2 } },
+  { { -1, 0 }, { -1, -1 }, { 0, 2 }, { -1, 2 } },
+  { { -1, 0 }, { -1, -1 }, { 0, 2 }, { -1, 2 } },
+  { { 1, 0 }, { 1, -1 }, { 0, -2 }, { 1, -2 } }
+};
+
+// For the I tetrimino the kicks are different
+static KickData WALL_KICKS_I[8] = {
+  { { -2, 0 }, { 1, 0 }, { -2, -1 }, { 1, 2 } },
+  { { 2, 0 }, { -1, 0 }, { 2, 1 }, { -1, -2 } },
+  { { -1, 0 }, { 2, 0 }, { -1, 2 }, { 2, -1 } },
+  { { 1, 0 }, { -2, 0 }, { 1, -2 }, { -2, 1 } },
+  { { 2, 0 }, { -1, 0 }, { 2, 1 }, { -1, -2 } },
+  { { -2, 0 }, { 1, 0 }, { -2, -1 }, { 1, 2 } },
+  { { 1, 0 }, { -2, 0 }, { 1, -2 }, { -2, 1 } },
+  { { -1, 0 }, { 2, 0 }, { -1, 2 }, { 2, -1 } }
+};
+
 typedef enum TETRIMINO_TYPE
 {
   MINO_T = 0,
