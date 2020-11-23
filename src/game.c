@@ -142,9 +142,6 @@ void draw_debug_info(GameState *state, ALLEGRO_FONT *font)
   sprintf(str, "Rotation #%d", state->current_tetrimino->rotation_index);
   al_draw_text(font, al_map_rgb(255, 145, 255), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
 
-  sprintf(str, "Rotation HEX: %x", state->current_tetrimino->rotation);
-  al_draw_text(font, al_map_rgb(255, 120, 120), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
-
   sprintf(str, "Played: %d", state->next_queue->minos_served);
   al_draw_text(font, al_map_rgb(100, 255, 200), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
 
