@@ -18,6 +18,7 @@ Tetrimino *t_generate(int type, int speed)
 	return mino;
 }
 
+// Resets the tetrimino values. The default col is 3 because it's the center of the playfield.
 void t_reset(Tetrimino *tetrimino)
 {
 	tetrimino->row = 0;
