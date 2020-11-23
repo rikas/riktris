@@ -316,6 +316,35 @@ bool wall_kick(Playfield *field, Tetrimino *tetrimino, int from, int to)
   // We couldn't wall kick!
   return false;
 }
+
+// Tries to rotate the tetrimino in the playfield. It may have to wall kick it. If it's not possible
+// to rotate the tetrimino then nothing happens.
+void playfield_rotate_tetrimino(Playfield *field, Tetrimino *tetrimino, int direction)
+{
+  int orig_rotation = tetrimino->rotation_index;
+
+  t_rotate(tetrimino, direction);
+
+  // Col and row before the wall kick calculations
+  int orig_col = tetrimino->col;
+  int orig_row = tetrimino->row;
+  bool kick_success = false;
+
+  // If the resulting rotation will overlap existing minos or will end up outside of the playfield
+  // then we need to perform a wall kick. This may or may not succeed, depending on where the
+  // tetrimino is. If it doesn't succeed then we assume we can't rotati the tetrimino at all and
+  // put it back to the original rotation.
+  if (overlaps(field, tetrimino)) {
+    kick_success = wall_kick(field, tetrimino, orig_rotation, tetrimino->rotation_index);
+
+    if (!kick_success) {
+      tetrimino->rotation_index = orig_rotation;
+      tetrimino->col = orig_col;
+      tetrimino->row = orig_row;
+    }
+  }
+}
+
 void playfield_move_mino_down(Playfield *field, Tetrimino *tetrimino)
 {
   bool touching_down = is_touching_down(field, tetrimino);

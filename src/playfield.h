@@ -38,6 +38,7 @@ bool is_touching_right(Playfield *field, Tetrimino *mino);
 void playfield_add_to_matrix(Playfield *field, Tetrimino *mino);
 void playfield_remove_completed_lines(Playfield *field);
 
+void playfield_rotate_tetrimino(Playfield *field, Tetrimino *tetrimino, int direction);
 void playfield_move_mino_down(Playfield *field, Tetrimino *mino);
 void playfield_hard_drop(Playfield *field, Tetrimino *mino);
 
