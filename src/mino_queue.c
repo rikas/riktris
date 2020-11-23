@@ -82,7 +82,6 @@ Tetrimino *pop_mino(MinoQueue *queue, unsigned int speed)
 
 void queue_draw(MinoQueue *queue)
 {
-  int index;
   Tetrimino *mino;
 
   for (int i = 0; i < 3; i++)
