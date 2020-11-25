@@ -7,21 +7,22 @@
 #include "utils.h"
 #include "gfx.h"
 
-#define FIELD_SQUARES_W 10
-#define FIELD_SQUARES_H 20
+#define FIELD_SQUARES_W 10u
+#define FIELD_SQUARES_H 20u
 
-typedef struct Playfield {
-  unsigned int x0;
-  unsigned int y0;
+typedef struct Playfield
+{
+	unsigned int x0;
+	unsigned int y0;
 
-  unsigned int x;
-  unsigned int y;
+	unsigned int x;
+	unsigned int y;
 
-  unsigned int margin_x;
-  unsigned int margin_y;
+	unsigned int margin_x;
+	unsigned int margin_y;
 
 	int matrix[FIELD_SQUARES_W][FIELD_SQUARES_H];
-  //Tetrimino *current_mino;
+	//Tetrimino *current_mino;
 } Playfield;
 
 void playfield_reset_matrix(Playfield *field);

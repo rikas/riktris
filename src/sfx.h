@@ -7,20 +7,23 @@
 
 #include "utils.h"
 
-enum {
-  SOUND_ROTATE,
-  SOUND_HARD_DROP,
-  SOUND_MAX // just for control
+enum
+{
+	SOUND_ROTATE,
+	SOUND_HARD_DROP,
+	SOUND_MAX // just for control
 };
 
-typedef struct Sound {
-  int id;
-  ALLEGRO_SAMPLE *sample;
+typedef struct Sound
+{
+	int id;
+	ALLEGRO_SAMPLE *sample;
 } Sound;
 
-typedef struct SFX {
-  Sound *samples[100];
-  int volume;
+typedef struct SFX
+{
+	Sound *samples[100];
+	int volume;
 } SFX;
 
 extern SFX *sfx;

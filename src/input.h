@@ -4,15 +4,15 @@
 #include <allegro5/allegro5.h>
 #include "config.h"
 
-#define KEY_SEEN       1
-#define KEY_RELEASED   2
+#define KEY_SEEN 1
+#define KEY_RELEASED 2
 
-typedef struct Input {
-  unsigned char pressed_keys[ALLEGRO_KEY_MAX];
-  int first_press_delay;
-  int keypress_delay[ALLEGRO_KEY_MAX];
+typedef struct Input
+{
+	unsigned char pressed_keys[ALLEGRO_KEY_MAX];
+	int first_press_delay;
+	int keypress_delay[ALLEGRO_KEY_MAX];
 } Input;
-
 
 extern Input *input;
 

@@ -5,9 +5,10 @@
 
 #define QUEUE_SIZE 14
 
-typedef struct MinoQueue {
-  int next_minos[QUEUE_SIZE + 1]; // double batch of tetriminos + 1 extra
-  int minos_served;
+typedef struct MinoQueue
+{
+	int next_minos[QUEUE_SIZE + 1]; // double batch of tetriminos + 1 extra
+	int minos_served;
 } MinoQueue;
 #endif
 

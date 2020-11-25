@@ -36,10 +36,9 @@ int main()
 	chdir(al_path_cstr(al_get_standard_path(ALLEGRO_RESOURCES_PATH), '/'));
 #endif
 
-	ALLEGRO_PATH* path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
-	must_init(path, "resources path");
-	al_change_directory(al_path_cstr(path, ALLEGRO_NATIVE_PATH_SEP));
-	al_destroy_path(path);
+	// ALLEGRO_PATH* path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
+	// al_change_directory(al_path_cstr(path, ALLEGRO_NATIVE_PATH_SEP));
+	// al_destroy_path(path);
 
 	// Load all game graphics into memory
 	init_gfx();
@@ -47,9 +46,6 @@ int main()
 	must_init(al_install_audio(), "audio");
 	must_init(al_init_acodec_addon(), "audio codecs");
 	must_init(al_reserve_samples(16), "reserve samples");
-
-	ALLEGRO_SAMPLE* sample = al_load_sample("rotate.wav");
-	must_init(sample, "test WAV");
 
 	// Load all game sounds into memory
 	init_sfx();
@@ -69,7 +65,7 @@ int main()
 	al_scale_transform(&t, scale_factor_x, scale_factor_y);
 	al_use_transform(&t);
 
-#if defined(_WIN32) || defined(_WIN64) 
+#if defined(_WIN32) || defined(_WIN64)
 	al_set_new_display_flags(ALLEGRO_PROGRAMMABLE_PIPELINE | ALLEGRO_DIRECT3D_INTERNAL);
 #else
 	al_set_new_display_flags(ALLEGRO_PROGRAMMABLE_PIPELINE | ALLEGRO_OPENGL);
