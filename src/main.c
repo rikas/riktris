@@ -13,19 +13,15 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/file.h>
 #include <allegro5/allegro_image.h>
+#include <allegro5/debug.h>
 #include "globals.h"
 #include "game.h"
 #include "gfx.h"
 #include "config.h"
+#include "music.h"
+#include "sfx.h"
 
-void must_init(bool test, const char *description)
-{
-    if(test) return;
-
-    printf("couldn't initialize %s\n", description);
-    exit(1);
-}
-
+#pragma GCC diagnostic ignored "-Wmissing-prototypes"
 int main()
 {
 	// Seed random
@@ -36,6 +32,13 @@ int main()
 
 	// Load all game graphics into memory
 	init_gfx();
+
+  must_init(al_install_audio(), "audio");
+  must_init(al_init_acodec_addon(), "audio codecs");
+  must_init(al_reserve_samples(16), "reserve samples");
+
+	// Load all game sounds into memory
+	init_sfx();
 
 	// For MAC OS X bundle to find the resources
 	#ifdef __APPLE__
@@ -75,7 +78,12 @@ int main()
 	al_register_event_source(queue, al_get_timer_event_source(timer));
 	al_start_timer(timer);
 
-	game_main_loop(queue, timer, font);
+  must_init(al_install_audio(), "audio");
+  must_init(al_init_acodec_addon(), "audio codecs");
+  must_init(al_reserve_samples(16), "reserve samples");
+
+	// play_music();
+	game_main_loop(queue, font);
 
 	al_destroy_font(font);
 	al_destroy_display(disp);

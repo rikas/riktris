@@ -1,3 +1,9 @@
+### Fix wav files downloaded from the Internet
+
+```
+ffmpeg -i "file.wav" -f wav -bitexact -acodec pcm_s16le -ar 22050 -ac 1 "file_good.wav"
+```
+
 ### Bundle in Mac OS X
 
 ```

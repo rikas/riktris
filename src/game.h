@@ -12,6 +12,7 @@ typedef struct GameState {
   bool tetrimino_falling;
   bool held_tetrimino;
   unsigned int speed;
+  unsigned int complete_lines;
   Tetrimino *tetrimino_on_hold;
   Tetrimino *current_tetrimino;
   Tetrimino *next_batch;
@@ -19,6 +20,6 @@ typedef struct GameState {
   MinoQueue *next_queue;
 } GameState;
 
-void game_main_loop(ALLEGRO_EVENT_QUEUE *queue, ALLEGRO_TIMER *timer, ALLEGRO_FONT *font);
+void game_main_loop(ALLEGRO_EVENT_QUEUE *queue, ALLEGRO_FONT *font);
 
 #endif

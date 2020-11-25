@@ -13,6 +13,6 @@ typedef struct GFX {
 
 
 extern GFX *gfx;
-void init_gfx();
-void destroy_gfx();
+void init_gfx(void);
+void destroy_gfx(void);
 #endif

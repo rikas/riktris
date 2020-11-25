@@ -2,7 +2,7 @@
 
 Input *input;
 
-int get_key_delay(int keycode)
+static int get_key_delay(int keycode)
 {
   if (keycode == config->key_down)
   {
@@ -17,7 +17,7 @@ int get_key_delay(int keycode)
   return 10000;
 }
 
-int get_key_first_delay(int keycode)
+static int get_key_first_delay(int keycode)
 {
   if (keycode == config->key_down) {
     return 0;
@@ -52,7 +52,7 @@ void set_key_delay(int keycode, unsigned int delay)
   input->keypress_delay[keycode] = delay;
 }
 
-bool in_cooldown(int keycode)
+static bool in_cooldown(int keycode)
 {
   return input->keypress_delay[keycode] > 0;
 }
@@ -98,10 +98,10 @@ void input_init()
   memset(input->pressed_keys, 0, sizeof(input->pressed_keys));
 }
 
-void input_destroy()
-{
-  free(input);
-}
+// void input_destroy()
+// {
+//   free(input);
+// }
 
 // Will decrement the keypress delay and will reset the pressed key states
 void input_refresh()

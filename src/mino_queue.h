@@ -11,6 +11,6 @@ typedef struct MinoQueue {
 } MinoQueue;
 #endif
 
-MinoQueue *queue_init();
+MinoQueue *queue_init(void);
 Tetrimino *pop_mino(MinoQueue *queue, unsigned int speed);
 void queue_draw(MinoQueue *queue);

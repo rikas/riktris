@@ -24,7 +24,7 @@ Playfield *playfield_init()
   return field;
 }
 
-bool overlaps(Playfield *field, Tetrimino *tetrimino)
+static bool overlaps(Playfield *field, Tetrimino *tetrimino)
 {
   for (int x = 0; x < ROTATIONS; x++)
   {
@@ -126,7 +126,7 @@ bool is_touching_down(Playfield *field, Tetrimino *mino)
   return false;
 }
 
-int max_drop_row(Playfield *field, Tetrimino *tetrimino)
+static int max_drop_row(Playfield *field, Tetrimino *tetrimino)
 {
   int max_row = FIELD_SQUARES_H - 1;
 
@@ -258,12 +258,38 @@ void playfield_remove_completed_lines(Playfield *field)
   }
 }
 
+int playfield_completed_lines(Playfield *field) {
+  bool complete_line;
+  int complete_lines = 0;
+
+  for (int row = 19; row != 0; row--)
+  {
+    complete_line = true;
+
+    for (int col = 0; col < 10; col++)
+    {
+      if (!field->matrix[col][row])
+      {
+        complete_line = false;
+      }
+    }
+
+    // Move all previous rows down
+    if (complete_line)
+    {
+      complete_lines++;
+    }
+  }
+
+  return complete_lines;
+}
+
 // Try to wall kick a tetrimino. This should be called only if the tetrimino is overlapping existing
 // minos in the playfield or out of bounds. Depending on the rotation being executed different
 // coordinates will be tested for the wall kick.
 //
 // This function will return true if it successfully wall kicked the tetrimino or false otherwise.
-bool wall_kick(Playfield *field, Tetrimino *tetrimino, int from, int to)
+static bool wall_kick(Playfield *field, Tetrimino *tetrimino, int from, int to)
 {
   // Will store the kick coordinates for the given rotation
   KickData kicks;

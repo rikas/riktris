@@ -20,8 +20,8 @@ typedef struct Config {
 } Config;
 
 extern Config *config;
-void config_load();
-void destroy_config();
+void config_load(void);
+void destroy_config(void);
 int get_config_int(const char *section, const char *key, int def);
 
 #endif

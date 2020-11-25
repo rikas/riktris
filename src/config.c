@@ -22,18 +22,18 @@ int get_config_int(const char *section, const char *key, int def)
   return (value) ? atoi(value) : def;
 }
 
-void set_config_int(const char *section, const char *key, int value)
-{
-  char buf[32];
+// void set_config_int(const char *section, const char *key, int value)
+// {
+//   char buf[32];
 
-  sprintf(buf, "%d", value);
-  al_set_config_value(config->file, section, key, buf);
-}
+//   sprintf(buf, "%d", value);
+//   al_set_config_value(config->file, section, key, buf);
+// }
 
-void save_config()
-{
-  al_save_config_file(CONFIG_FILE, config->file);
-}
+// void save_config()
+// {
+//   al_save_config_file(CONFIG_FILE, config->file);
+// }
 
 void destroy_config()
 {
