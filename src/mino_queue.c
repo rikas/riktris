@@ -1,37 +1,59 @@
+#if defined(_WIN32) || defined(_WIN64) 
+#include <winsock.h>
+#include <time.h>  
+#else
 #include <sys/time.h>
+#endif
 #include <stdio.h>
 #include "mino_queue.h"
 #include "tetriminos.h"
 #include "game.h"
 
-static void shuffle(int *array, size_t n)
+#if defined(_WIN32) || defined(_WIN64)
+void shuffle(int* array, size_t n)
 {
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  int usec = tv.tv_usec;
-  srand48(usec);
-
-  if (n > 1)
-  {
-    size_t i;
-    for (i = n - 1; i > 0; i--)
+    if (n > 1)
     {
-      size_t j = (unsigned int)(drand48() * (i + 1));
-      int t = array[j];
-      array[j] = array[i];
-      array[i] = t;
+        size_t i;
+        for (i = 0; i < n - 1; i++)
+        {
+            size_t j = i + rand() / (RAND_MAX / (n - i) + 1);
+            int t = array[j];
+            array[j] = array[i];
+            array[i] = t;
+        }
     }
-  }
+}  
+#else
+static void shuffle(int* array, size_t n)
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    int usec = tv.tv_usec;
+    srand48(usec);
+
+    if (n > 1)
+    {
+        size_t i;
+        for (i = n - 1; i > 0; i--)
+        {
+            size_t j = (unsigned int)(drand48() * (i + 1));
+            int t = array[j];
+            array[j] = array[i];
+            array[i] = t;
+        }
+    }
 }
+#endif
 
 static void generate_next_batch(MinoQueue *queue)
 {
   int new_indexes[TETRIMINO_COUNT] = {0, 1, 2, 3, 4, 5, 6};
   shuffle(&new_indexes[0], TETRIMINO_COUNT);
 
-  int i, took = 0;
+  int took = 0;
 
-  for (i = 0; i < QUEUE_SIZE && took < TETRIMINO_COUNT; i++)
+  for (int i = 0; i < QUEUE_SIZE && took < TETRIMINO_COUNT; i++)
   {
     if (queue->next_minos[i] == INVALID_TETRIMINO)
     {

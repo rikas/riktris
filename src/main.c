@@ -26,29 +26,33 @@ int main()
 {
 	// Seed random
 	srand(time(NULL));
+
 	must_init(al_init(), "allegro lib");
 	must_init(al_init_image_addon(), "image addon");
 	must_init(al_install_keyboard(), "keyboard");
 
-	// Load all game graphics into memory
-	init_gfx();
-
-  must_init(al_install_audio(), "audio");
-  must_init(al_init_acodec_addon(), "audio codecs");
-  must_init(al_reserve_samples(16), "reserve samples");
-
-	// Load all game sounds into memory
-	init_sfx();
-
 	// For MAC OS X bundle to find the resources
-	#ifdef __APPLE__
-		chdir(al_path_cstr(al_get_standard_path(ALLEGRO_RESOURCES_PATH), '/'));
-	#endif
+#ifdef __APPLE__
+	chdir(al_path_cstr(al_get_standard_path(ALLEGRO_RESOURCES_PATH), '/'));
+#endif
 
 	ALLEGRO_PATH* path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
 	must_init(path, "resources path");
 	al_change_directory(al_path_cstr(path, ALLEGRO_NATIVE_PATH_SEP));
 	al_destroy_path(path);
+
+	// Load all game graphics into memory
+	init_gfx();
+
+	must_init(al_install_audio(), "audio");
+	must_init(al_init_acodec_addon(), "audio codecs");
+	must_init(al_reserve_samples(16), "reserve samples");
+
+	ALLEGRO_SAMPLE* sample = al_load_sample("rotate.wav");
+	must_init(sample, "test WAV");
+
+	// Load all game sounds into memory
+	init_sfx();
 
 	ALLEGRO_TIMER *timer = al_create_timer(1.0 / FPS);
 	ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();
@@ -64,8 +68,8 @@ int main()
 	al_identity_transform(&t);
 	al_scale_transform(&t, scale_factor_x, scale_factor_y);
 	al_use_transform(&t);
-	
-#ifdef WIN32
+
+#if defined(_WIN32) || defined(_WIN64) 
 	al_set_new_display_flags(ALLEGRO_PROGRAMMABLE_PIPELINE | ALLEGRO_DIRECT3D_INTERNAL);
 #else
 	al_set_new_display_flags(ALLEGRO_PROGRAMMABLE_PIPELINE | ALLEGRO_OPENGL);
@@ -77,10 +81,6 @@ int main()
 	al_register_event_source(queue, al_get_display_event_source(disp));
 	al_register_event_source(queue, al_get_timer_event_source(timer));
 	al_start_timer(timer);
-
-  must_init(al_install_audio(), "audio");
-  must_init(al_init_acodec_addon(), "audio codecs");
-  must_init(al_reserve_samples(16), "reserve samples");
 
 	// play_music();
 	game_main_loop(queue, font);

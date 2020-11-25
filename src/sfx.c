@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS // for VS compiler hapiness
 #include "sfx.h"
 
 SFX *sfx;
@@ -9,7 +10,7 @@ static void load_sample(Sound **sound, int id, char *name)
 
   new_sound->id = id;
 
-  sprintf(filename, "sfx/%s.wav", name);
+  sprintf(filename, "%s.wav", name);
 
   new_sound->sample = al_load_sample(filename);
   must_init(new_sound->sample, filename);

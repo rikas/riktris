@@ -5,25 +5,25 @@ GFX *gfx;
 void init_gfx()
 {
   gfx = (GFX *)malloc((sizeof(GFX)));
+  must_init(gfx, "gfx");
 
-  gfx->playfield = al_load_bitmap("gfx/field.png");
+  gfx->playfield = al_load_bitmap("field.png");
+  must_init(gfx->playfield, "gfx playfield.png");
 
-  gfx->minos[0] = al_load_bitmap("gfx/mino_t.png");
-  gfx->minos[1] = al_load_bitmap("gfx/mino_s.png");
-  gfx->minos[2] = al_load_bitmap("gfx/mino_z.png");
-  gfx->minos[3] = al_load_bitmap("gfx/mino_i.png");
-  gfx->minos[4] = al_load_bitmap("gfx/mino_j.png");
-  gfx->minos[5] = al_load_bitmap("gfx/mino_l.png");
-  gfx->minos[6] = al_load_bitmap("gfx/mino_o.png");
-  gfx->minos[7] = al_load_bitmap("gfx/mino_x.png");
+  char* mino_names[TETRIMINO_COUNT] = { "t", "s", "z", "i", "j", "l", "o" };
+  
+  for (int i = 0; i < TETRIMINO_COUNT; i++)
+  {
+      char filename[32];
+      
+      sprintf(filename, "mino_%s.png", mino_names[i]);
+      gfx->minos[i] = al_load_bitmap(filename);
+      must_init(gfx->minos[i], filename);
 
-  gfx->ghosts[0] = al_load_bitmap("gfx/mino_ghost_t.png");
-  gfx->ghosts[1] = al_load_bitmap("gfx/mino_ghost_s.png");
-  gfx->ghosts[2] = al_load_bitmap("gfx/mino_ghost_z.png");
-  gfx->ghosts[3] = al_load_bitmap("gfx/mino_ghost_i.png");
-  gfx->ghosts[4] = al_load_bitmap("gfx/mino_ghost_j.png");
-  gfx->ghosts[5] = al_load_bitmap("gfx/mino_ghost_l.png");
-  gfx->ghosts[6] = al_load_bitmap("gfx/mino_ghost_o.png");
+      sprintf(filename, "mino_ghost_%s.png", mino_names[i]);
+      gfx->ghosts[i] = al_load_bitmap(filename);
+      must_init(gfx->ghosts[i], filename);
+  }
 }
 
 void destroy_gfx()
@@ -39,8 +39,6 @@ void destroy_gfx()
     al_destroy_bitmap(gfx->minos[i]);
     al_destroy_bitmap(gfx->ghosts[i]);
   }
-
-  al_destroy_bitmap(gfx->minos[TETRIMINO_COUNT]);
 
   free(gfx);
 }

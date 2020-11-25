@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS // for VS compiler hapiness
+
 #include <stdio.h>
 #include "globals.h"
 #include "game.h"
@@ -175,6 +177,7 @@ void game_main_loop(ALLEGRO_EVENT_QUEUE *event_queue, ALLEGRO_FONT *font)
 {
   GameState *state = (GameState *)malloc(sizeof(GameState));
   init_game_state(state);
+  must_init(state, "game state");
 
   input_init();
   config_load();

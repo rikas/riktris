@@ -4,6 +4,7 @@
 #define CONFIG_FILE "configuration.cfg"
 
 #include <allegro5/allegro5.h>
+#include "utils.h"
 
 typedef struct Config {
   ALLEGRO_CONFIG *file;

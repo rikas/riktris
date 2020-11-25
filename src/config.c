@@ -6,6 +6,8 @@ void config_load()
 {
   config = (Config *)malloc(sizeof(Config));
   config->file = al_load_config_file(CONFIG_FILE);
+  must_init(config->file, "config file");
+
   config->key_left = get_config_int("keys", "key_left", ALLEGRO_KEY_LEFT);
   config->key_right = get_config_int("keys", "key_right", ALLEGRO_KEY_RIGHT);
   config->key_down = get_config_int("keys", "key_down", ALLEGRO_KEY_DOWN);
