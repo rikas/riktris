@@ -16,12 +16,12 @@ typedef struct Input {
 
 extern Input *input;
 
-void input_init();
+void input_init(void);
 void set_key_delay(int keycode, unsigned int delay);
 bool key_down(int keycode);
 bool key_up(int keycode);
 int wait_for_keypress(ALLEGRO_EVENT_QUEUE *event_queue);
 bool key_pressed(int keycode);
 bool delayed_press(int keycode);
-void input_refresh();
+void input_refresh(void);
 #endif

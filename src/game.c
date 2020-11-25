@@ -5,19 +5,21 @@
 #include "mino_queue.h"
 #include "input.h"
 #include "config.h"
+#include "sfx.h"
 
-void init_game_state(GameState *state)
+static void init_game_state(GameState *state)
 {
   state->running = true;
   state->tetrimino_falling = false;
   state->held_tetrimino = false;
   state->tetrimino_on_hold = 0;
   state->speed = 80;
+  state->complete_lines = 0;
   state->playfield = playfield_init();
   state->next_queue = queue_init();
 }
 
-void draw_held_tetrimino(GameState *state)
+static void draw_held_tetrimino(GameState *state)
 {
   if (!state->tetrimino_on_hold) {
     return;
@@ -26,7 +28,7 @@ void draw_held_tetrimino(GameState *state)
   t_draw(state->tetrimino_on_hold, -50, 80, MINO_BLOCK);
 }
 
-void hold_current_tetrimino(GameState *state)
+static void hold_current_tetrimino(GameState *state)
 {
   if (state->held_tetrimino) {
     return;
@@ -49,7 +51,7 @@ void hold_current_tetrimino(GameState *state)
 // When reading the inputs there's a delay for repeating the same input (if the user keeps the key
 // pressed). By calling delayed_press() we ensure that the action is done only after a certain
 // timeout (which may be different, depending on the key code).
-void read_inputs(GameState *state)
+static void read_inputs(GameState *state)
 {
   // Key <DOWN> was pressed
   if (delayed_press(config->key_down))
@@ -75,6 +77,7 @@ void read_inputs(GameState *state)
   if (delayed_press(config->key_rotate_right))
   {
     playfield_rotate_tetrimino(state->playfield, state->current_tetrimino, RIGHT);
+    sfx_play(SOUND_ROTATE);
   }
 
   // Key <ROTATE_LEFT> was pressed
@@ -94,6 +97,7 @@ void read_inputs(GameState *state)
   {
     playfield_hard_drop(state->playfield, state->current_tetrimino);
     state->held_tetrimino = false;
+    sfx_play(SOUND_HARD_DROP);
   }
 
   if (delayed_press(ALLEGRO_KEY_ESCAPE))
@@ -109,7 +113,7 @@ void read_inputs(GameState *state)
 
 }
 
-void update_game_state(GameState *state)
+static void update_game_state(GameState *state)
 {
   if (!state->tetrimino_falling)
   {
@@ -124,14 +128,17 @@ void update_game_state(GameState *state)
   // another tetrimino from the queue.
   state->tetrimino_falling = !state->current_tetrimino->dropped;
 
+  int lines = playfield_completed_lines(state->playfield);
+  state->complete_lines += lines;
+
   playfield_remove_completed_lines(state->playfield);
 }
 
-void draw_game_state()
-{
-}
+// void draw_game_state()
+// {
+// }
 
-void draw_debug_info(GameState *state, ALLEGRO_FONT *font)
+static void draw_debug_info(GameState *state, ALLEGRO_FONT *font)
 {
   int line = 13;
   char str[32];
@@ -160,11 +167,11 @@ void draw_debug_info(GameState *state, ALLEGRO_FONT *font)
   sprintf(str, "Imminent drop?: %d", state->current_tetrimino->imminent_drop);
   al_draw_text(font, al_map_rgb(145, 155, 250), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
 
-  sprintf(str, "HARD DROP: %d", config->key_hard_drop);
+  sprintf(str, "Complete lines: %d", state->complete_lines);
   al_draw_text(font, al_map_rgb(145, 155, 250), WINDOW_MARGIN, WINDOW_MARGIN + LINE_HEIGHT * line++, 0, str);
 }
 
-void game_main_loop(ALLEGRO_EVENT_QUEUE *event_queue, ALLEGRO_TIMER *timer, ALLEGRO_FONT *font)
+void game_main_loop(ALLEGRO_EVENT_QUEUE *event_queue, ALLEGRO_FONT *font)
 {
   GameState *state = (GameState *)malloc(sizeof(GameState));
   init_game_state(state);

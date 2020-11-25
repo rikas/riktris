@@ -4,7 +4,7 @@
 #include "tetriminos.h"
 #include "game.h"
 
-void shuffle(int *array, size_t n)
+static void shuffle(int *array, size_t n)
 {
   struct timeval tv;
   gettimeofday(&tv, NULL);
@@ -24,7 +24,7 @@ void shuffle(int *array, size_t n)
   }
 }
 
-void generate_next_batch(MinoQueue *queue)
+static void generate_next_batch(MinoQueue *queue)
 {
   int new_indexes[TETRIMINO_COUNT] = {0, 1, 2, 3, 4, 5, 6};
   shuffle(&new_indexes[0], TETRIMINO_COUNT);
@@ -41,7 +41,7 @@ void generate_next_batch(MinoQueue *queue)
   }
 }
 
-MinoQueue *queue_init(GameState *state)
+MinoQueue *queue_init()
 {
   int indexes[TETRIMINO_COUNT] = {0, 1, 2, 3, 4, 5, 6};
   shuffle(&indexes[0], TETRIMINO_COUNT);
