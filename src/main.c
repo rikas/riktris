@@ -1,9 +1,14 @@
 #define DEBUGMODE
 #define ALLEGRO_STATICLINK
+
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+
+#ifdef __APPLE__
 #include <unistd.h> // MAC OS X only
+#endif
+
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/file.h>
@@ -33,12 +38,18 @@ int main()
 	init_gfx();
 
 	// For MAC OS X bundle to find the resources
-	chdir(al_path_cstr(al_get_standard_path(ALLEGRO_RESOURCES_PATH), '/'));
+	#ifdef __APPLE__
+		chdir(al_path_cstr(al_get_standard_path(ALLEGRO_RESOURCES_PATH), '/'));
+	#endif
 
+	ALLEGRO_PATH* path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
+	must_init(path, "resources path");
+	al_change_directory(al_path_cstr(path, ALLEGRO_NATIVE_PATH_SEP));
+	al_destroy_path(path);
 
 	ALLEGRO_TIMER *timer = al_create_timer(1.0 / FPS);
 	ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();
-	ALLEGRO_DISPLAY *disp = al_create_display(WINDOW_W * 2, WINDOW_H * 2);
+	ALLEGRO_DISPLAY *disp = al_create_display(WINDOW_W, WINDOW_H);
 	ALLEGRO_FONT *font = al_create_builtin_font();
 
 	ALLEGRO_TRANSFORM t;
@@ -50,8 +61,13 @@ int main()
 	al_identity_transform(&t);
 	al_scale_transform(&t, scale_factor_x, scale_factor_y);
 	al_use_transform(&t);
-
+	
+#ifdef WIN32
+	al_set_new_display_flags(ALLEGRO_PROGRAMMABLE_PIPELINE | ALLEGRO_DIRECT3D_INTERNAL);
+#else
 	al_set_new_display_flags(ALLEGRO_PROGRAMMABLE_PIPELINE | ALLEGRO_OPENGL);
+#endif
+
 	al_set_window_title(disp, "Riktris");
 
 	al_register_event_source(queue, al_get_keyboard_event_source());
