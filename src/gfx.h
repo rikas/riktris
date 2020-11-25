@@ -4,6 +4,7 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_image.h>
 #include "globals.h"
+#include "utils.h"
 
 typedef struct GFX {
   ALLEGRO_BITMAP *playfield;
