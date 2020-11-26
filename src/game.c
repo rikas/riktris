@@ -205,7 +205,7 @@ void game_main_loop(ALLEGRO_EVENT_QUEUE *event_queue, ALLEGRO_FONT *font)
 
 			if (event.timer.source == tetrimino_drop_timer)
 			{
-				// playfield_move_mino_down(state->playfield, state->current_tetrimino);
+				playfield_move_mino_down(state->playfield, state->current_tetrimino);
 			}
 			else
 			{
