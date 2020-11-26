@@ -1,5 +1,5 @@
 CC = gcc
-LDFLAGS = -Wall `pkg-config --cflags --libs allegro-5 allegro_main-5 allegro_font-5 allegro_primitives-5 allegro_image-5 allegro_acodec-5 allegro_audio-5`
+LDFLAGS = -Wall `pkg-config --cflags --libs physfs allegro_physfs-5 allegro-5 allegro_main-5 allegro_font-5 allegro_primitives-5 allegro_image-5 allegro_acodec-5 allegro_audio-5`
 OBJ = obj/gfx.o obj/sfx.o obj/main.o obj/playfield.o obj/game.o obj/tetriminos.o obj/mino_queue.o obj/input.o obj/config.o obj/utils.o obj/music.o
 BIN = build/riktris
 COMPILE_OPTS= -Wall -x c --std=c99 -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition
@@ -39,6 +39,10 @@ obj/utils.o:
 obj/music.o:
 	$(CC) $(COMPILE_OPTS) -c src/music.c -o obj/music.o
 
+compile_dat:
+	zip -r ./build/gfx.dat ./data/gfx/*
+	zip -r ./build/sfx.dat ./data/sfx/*
+	zip -r ./build/misc.dat ./data/misc/*
 clean:
 	rm -rf obj/*.o
 

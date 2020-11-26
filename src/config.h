@@ -1,7 +1,7 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-#define CONFIG_FILE "configuration.cfg"
+#define CONFIG_FILE "data/misc/configuration.cfg"
 
 #include <allegro5/allegro5.h>
 #include "utils.h"
