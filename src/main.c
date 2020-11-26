@@ -35,10 +35,11 @@ int main(int argc, char *argv[])
 	chdir(al_path_cstr(al_get_standard_path(ALLEGRO_RESOURCES_PATH), '/'));
 #endif
 
-	// ALLEGRO_PATH* path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
-	// al_change_directory(al_path_cstr(path, ALLEGRO_NATIVE_PATH_SEP));
-	// al_destroy_path(path);
+	ALLEGRO_PATH* path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
+	al_change_directory(al_path_cstr(path, ALLEGRO_NATIVE_PATH_SEP));
+	al_destroy_path(path);
 
+	// Read the zip files and make them available for data loading.
 	must_init(PHYSFS_init(NULL), "PHYSFS engine");
 	must_init(PHYSFS_mount("gfx.dat", NULL, 1), "gfx zip file");
 	must_init(PHYSFS_mount("sfx.dat", NULL, 1), "sfx zip file");
