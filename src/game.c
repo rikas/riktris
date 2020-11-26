@@ -31,11 +31,11 @@ static void draw_held_tetrimino(GameState *state)
 	t_draw(state->tetrimino_on_hold, -50, 80, MINO_BLOCK);
 }
 
-static void hold_current_tetrimino(GameState *state)
+static bool hold_current_tetrimino(GameState *state)
 {
 	if (state->held_tetrimino)
 	{
-		return;
+		return false;
 	}
 
 	Tetrimino *temp = state->tetrimino_on_hold;
@@ -53,6 +53,8 @@ static void hold_current_tetrimino(GameState *state)
 	}
 
 	state->held_tetrimino = true;
+
+	return true;
 }
 
 // When reading the inputs there's a delay for repeating the same input (if the user keeps the key
@@ -69,34 +71,43 @@ static void read_inputs(GameState *state)
 	// Key <RIGHT> was pressed
 	if (delayed_press(config->key_right))
 	{
-		if (!is_touching_right(state->playfield, state->current_tetrimino))
+		if (!is_touching_right(state->playfield, state->current_tetrimino)) {
+			sfx_play(SOUND_MOVE, SFX_NORMAL_SPEED);
 			t_move(state->current_tetrimino, RIGHT);
+		}
 	}
 
 	// Key <LEFT> was pressed
 	if (delayed_press(config->key_left))
 	{
-		if (!is_touching_left(state->playfield, state->current_tetrimino))
+		if (!is_touching_left(state->playfield, state->current_tetrimino)) {
+			sfx_play(SOUND_MOVE, SFX_NORMAL_SPEED);
 			t_move(state->current_tetrimino, LEFT);
+		}
 	}
 
 	// Key <ROTATE_RIGHT> was pressed
 	if (delayed_press(config->key_rotate_right))
 	{
+		sfx_play(SOUND_ROTATE, SFX_NORMAL_SPEED * 1.2);
 		playfield_rotate_tetrimino(state->playfield, state->current_tetrimino, RIGHT);
-		sfx_play(SOUND_ROTATE);
 	}
 
 	// Key <ROTATE_LEFT> was pressed
 	if (delayed_press(config->key_rotate_left))
 	{
+		sfx_play(SOUND_ROTATE, SFX_NORMAL_SPEED);
 		playfield_rotate_tetrimino(state->playfield, state->current_tetrimino, LEFT);
 	}
 
 	// Key <HOLD> was pressed
 	if (delayed_press(config->key_hold))
 	{
-		hold_current_tetrimino(state);
+		if (hold_current_tetrimino(state)) {
+			sfx_play(SOUND_ERROR, SFX_NORMAL_SPEED);
+		} else {
+			sfx_play(SOUND_HOLD, SFX_NORMAL_SPEED);
+		};
 	}
 
 	// Key <HARD_DROP> was pressed
@@ -104,7 +115,7 @@ static void read_inputs(GameState *state)
 	{
 		playfield_hard_drop(state->playfield, state->current_tetrimino);
 		state->held_tetrimino = false;
-		sfx_play(SOUND_HARD_DROP);
+		sfx_play(SOUND_HARD_DROP, SFX_NORMAL_SPEED);
 	}
 
 	if (delayed_press(ALLEGRO_KEY_ESCAPE))
@@ -136,6 +147,22 @@ static void update_game_state(GameState *state)
 
 	int lines = playfield_completed_lines(state->playfield);
 	state->complete_lines += lines;
+
+	if (lines == 1) {
+		sfx_play(SOUND_LINE_1, SFX_NORMAL_SPEED);
+	}
+
+	if (lines == 2) {
+		sfx_play(SOUND_LINE_2, SFX_NORMAL_SPEED);
+	}
+
+	if (lines == 3) {
+		sfx_play(SOUND_LINE_3, SFX_NORMAL_SPEED);
+	}
+
+	if (lines == 4) {
+		sfx_play(SOUND_LINE_3, SFX_NORMAL_SPEED * 2);
+	}
 
 	playfield_remove_completed_lines(state->playfield);
 }

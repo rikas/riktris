@@ -39,17 +39,20 @@ obj/utils.o:
 obj/music.o:
 	$(CC) $(COMPILE_OPTS) -c src/music.c -o obj/music.o
 
-compile_dat:
+compile_assets:
 	zip -r ./build/gfx.dat ./data/gfx/*
 	zip -r ./build/sfx.dat ./data/sfx/*
 	zip -r ./build/misc.dat ./data/misc/*
 clean:
 	rm -rf obj/*.o
+	rm -f ./build/gfx.dat
+	rm -f ./build/sfx.dat
+	rm -f ./build/misc.dat
 
 build: clean $(OBJ)
 	$(CC) -Wall -o $(BIN) $(OBJ) $(LDFLAGS)
 
-run: clean build
+run: build compile_assets
 	./build/riktris
 
 debug: $(OBJ)

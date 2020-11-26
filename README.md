@@ -4,6 +4,18 @@
 ffmpeg -i "file.wav" -f wav -bitexact -acodec pcm_s16le -ar 22050 -ac 1 "file_good.wav"
 ```
 
+### Convert mp3 to ogg
+
+```
+ffmpeg -i file.mp3 -c:a libvorbis -q:a 4 file.ogg
+```
+
+### Convert wav to ogg
+
+```
+ffmpeg -i audio.wav -acodec libvorbis audio.ogg
+```
+
 ### Bundle in Mac OS X
 
 ```

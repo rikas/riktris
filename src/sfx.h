@@ -7,10 +7,18 @@
 
 #include "utils.h"
 
+#define SFX_NORMAL_SPEED 1.0
+
 enum
 {
 	SOUND_ROTATE,
 	SOUND_HARD_DROP,
+	SOUND_LINE_1,
+	SOUND_LINE_2,
+	SOUND_LINE_3,
+	SOUND_ERROR,
+	SOUND_HOLD,
+	SOUND_MOVE,
 	SOUND_MAX // just for control
 };
 
@@ -32,5 +40,5 @@ extern SFX *sfx;
 
 void init_sfx(void);
 void destroy_sfx(void);
-void sfx_play(int id);
+void sfx_play(int id, float speed);
 #endif
