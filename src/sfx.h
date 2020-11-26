@@ -14,12 +14,14 @@ enum
 	SOUND_MAX // just for control
 };
 
+// Stores the unique ID (int) and the ALLEGRO_SAMPLE for a game sfx.
 typedef struct Sound
 {
 	int id;
 	ALLEGRO_SAMPLE *sample;
 } Sound;
 
+// Stores sound information like volume, but also stores in memory all the samples.
 typedef struct SFX
 {
 	Sound *samples[100];
