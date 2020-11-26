@@ -10,11 +10,11 @@ static void load_mino_bitmaps()
 	{
 		char filename[32];
 
-		sprintf(filename, "gfx/mino_%s.png", mino_names[i]);
+		sprintf(filename, "data/gfx/mino_%s.png", mino_names[i]);
 		gfx->minos[i] = al_load_bitmap(filename);
 		must_init(gfx->minos[i], filename);
 
-		sprintf(filename, "gfx/mino_ghost_%s.png", mino_names[i]);
+		sprintf(filename, "data/gfx/mino_ghost_%s.png", mino_names[i]);
 		gfx->ghosts[i] = al_load_bitmap(filename);
 		must_init(gfx->ghosts[i], filename);
 	}
@@ -25,7 +25,7 @@ void init_gfx()
 	gfx = (GFX *)malloc((sizeof(GFX)));
 	must_init(gfx, "gfx");
 
-	gfx->playfield = al_load_bitmap("gfx/field.png");
+	gfx->playfield = al_load_bitmap("data/gfx/field.png");
 	must_init(gfx->playfield, "field.png");
 
 	load_mino_bitmaps();

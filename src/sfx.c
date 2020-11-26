@@ -10,7 +10,7 @@ static void load_sample(Sound **sound, int id, char *name)
 
 	new_sound->id = id;
 
-	sprintf(filename, "sfx/%s.wav", name);
+	sprintf(filename, "data/sfx/%s.wav", name);
 
 	new_sound->sample = al_load_sample(filename);
 	must_init(new_sound->sample, filename);

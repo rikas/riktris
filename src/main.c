@@ -13,6 +13,8 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/file.h>
 #include <allegro5/allegro_image.h>
+#include <allegro5/allegro_physfs.h>
+#include <physfs.h>
 #include <allegro5/debug.h>
 #include "globals.h"
 #include "game.h"
@@ -22,7 +24,7 @@
 #include "sfx.h"
 
 #pragma GCC diagnostic ignored "-Wmissing-prototypes"
-int main()
+int main(int argc, char *argv[])
 {
 	// Seed random
 	srand(time(NULL));
@@ -39,6 +41,13 @@ int main()
 	// ALLEGRO_PATH* path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
 	// al_change_directory(al_path_cstr(path, ALLEGRO_NATIVE_PATH_SEP));
 	// al_destroy_path(path);
+
+	must_init(PHYSFS_init(NULL), "PHYSFS engine");
+	must_init(PHYSFS_mount("gfx.dat", NULL, 1), "gfx zip file");
+	must_init(PHYSFS_mount("sfx.dat", NULL, 1), "sfx zip file");
+	must_init(PHYSFS_mount("misc.dat", NULL, 1), "dat zip file");
+
+	al_set_physfs_file_interface();
 
 	// Load all game graphics into memory
 	init_gfx();
