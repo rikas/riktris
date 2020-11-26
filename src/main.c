@@ -58,7 +58,11 @@ int main(int argc, char *argv[])
 
 	ALLEGRO_TIMER *timer = al_create_timer(1.0 / FPS);
 	ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();
+	#ifdef __APPLE__
+	ALLEGRO_DISPLAY *disp = al_create_display(WINDOW_W * 2, WINDOW_H * 2);
+	#else
 	ALLEGRO_DISPLAY *disp = al_create_display(WINDOW_W, WINDOW_H);
+	#endif
 	ALLEGRO_FONT *font = al_create_builtin_font();
 
 	ALLEGRO_TRANSFORM t;
