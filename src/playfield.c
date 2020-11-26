@@ -32,13 +32,15 @@ static bool overlaps(Playfield *field, Tetrimino *tetrimino)
 		{
 			if (is_square(tetrimino, x, y))
 			{
+				// The square is overlapping an existing square in the playfield.
 				if (field->matrix[tetrimino->col + x][tetrimino->row + y])
 				{
 					return true;
 				}
-
-				if ((tetrimino->col + x) > ((int)FIELD_SQUARES_W - 1) ||
-						(tetrimino->row + y) > ((int)FIELD_SQUARES_H - 1))
+				// The square is outside of the playfield!
+				if ((tetrimino->col + x) > ((int)FIELD_SQUARES_W -1) ||
+						(tetrimino->row + y) > ((int)FIELD_SQUARES_H -1) ||
+						(tetrimino->col + x) < 0)
 				{
 					return true;
 				}
