@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 	al_register_event_source(queue, al_get_timer_event_source(timer));
 	al_start_timer(timer);
 
-	// play_music();
+	play_music();
 	game_main_loop(queue, font);
 
 	al_destroy_font(font);
